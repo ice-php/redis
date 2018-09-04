@@ -1,0 +1,41 @@
+{
+  "name": "ice-php/redis",
+  "description": "对Redis功能进行封装",
+  "keywords": [
+    "icePHP",
+    "redis"
+  ],
+  "homepage": "https://github.com/ice-php/redis",
+  "type": "composer",
+  "license": "MIT",
+  "support": {
+    "source": "https://github.com/ice-php/redis"
+  },
+  "authors": [
+    {
+      "name": "blueice",
+      "email": "liyong@nenu.edu.cn"
+    }
+  ],
+  "require": {
+    "php": ">=7.1.0",
+    "ice-php/functions": "dev-master",
+    "ice-php/config": "dev-master",
+    "ice-php/debug": "dev-master"
+  },
+  "minimum-stability": "dev",
+  "autoload": {
+    "psr-4": {
+      "icePHP\\": "src"
+    }
+  },
+  "repositories": {
+    "packagist": {
+      "type": "composer",
+      "url": "https://packagist.org"
+    }
+  },
+  "config": {
+    "process-timeout": 1800
+  }
+}
