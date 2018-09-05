@@ -38,7 +38,7 @@ final class RedisConnection
 
     /**
      * 创建连接句柄
-     * @return Redis 实际Redis连接句柄
+     * @return \redis 实际Redis连接句柄
      * @throws \Exception
      */
     public function connect(): \redis
@@ -76,7 +76,7 @@ final class RedisConnection
      * @param $password
      * @return bool
      */
-    private function auth($password)
+    private function auth($password):bool
     {
         return $this->handle->auth($password);
     }
@@ -85,7 +85,7 @@ final class RedisConnection
      * 返回关于 Redis 服务器的各种信息和统计值。
      * @return string
      */
-    public function info()
+    public function info():string
     {
         return $this->handle->info();
     }
@@ -93,19 +93,20 @@ final class RedisConnection
     /**
      * 客户端向服务器发送一个 PING ，然后服务器返回客户端一个 PONG 。
      * @internal
-     * @return string 'PONG'
+     * @return bool
      */
-    public function ping()
+    public function ping():bool
     {
         return $this->handle->ping() === 'PONG';
     }
 
     /**
      * 打印一个特定的信息 message ，测试时使用。
+     * @param $msg string
      * @internal
-     * @return mixed
+     * @return string
      */
-    public function echoMessage(string $msg)
+    public function echoMessage(string $msg):string
     {
         return $this->handle->echo($msg);
     }
