@@ -394,7 +394,7 @@ final class Redis
     public static function getTimeout()
     {
         try {
-            return intval(Config::get('redis', 'timeout')) ?: 30;
+            return intval(config('redis', 'timeout')) ?: 30;
         } catch (\Exception $e) {
             return 30;
         }

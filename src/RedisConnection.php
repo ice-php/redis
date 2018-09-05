@@ -52,7 +52,7 @@ final class RedisConnection
         $start = timeLog();
 
         // 取此集合的配置
-        $config = $config = Config::get('redis');
+        $config = $config = config('redis');
 
         //尝试连接,出错就抛异常吧
         $this->handle = new \redis();
@@ -67,7 +67,7 @@ final class RedisConnection
         }
 
         // 记录调试信息
-        Debug::set("connect to redis {$config['hostname']} ,persist:" . timeLog($start) . 'ms');
+        debug("connect to redis {$config['hostname']} ,persist:" . timeLog($start) . 'ms');
         return $this->handle;
     }
 
