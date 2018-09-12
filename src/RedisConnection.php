@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+
 namespace icePHP;
 
 /**
@@ -39,7 +40,7 @@ final class RedisConnection
     /**
      * 创建连接句柄
      * @return \redis 实际Redis连接句柄
-     * @throws \Exception
+     * @throws RedisException
      */
     public function connect(): \redis
     {
@@ -52,17 +53,24 @@ final class RedisConnection
         $start = timeLog();
 
         // 取此集合的配置
-        $config = $config = config('redis');
+        try {
+            $config = $config = config('redis');
+        } catch (ConfigException $e) {
+            throw new RedisException('无法读取Redis配置文件', RedisException::MISS_CONFIG);
+        }
 
         //尝试连接,出错就抛异常吧
         $this->handle = new \redis();
-        $this->handle->connect($config['hostname'], $config['port']);
+        $success = $this->handle->connect($config['hostname'], $config['port']);
+        if (!$success) {
+            throw new RedisException('无法连接Redis服务器', RedisException::CONNECT_FAIL);
+        }
 
         //如果设置了密码,要通过AUTH
         if (isset($config['password']) and $config['password']) {
             //如果密码不正确,提示
             if (!$this->auth($config['password'])) {
-                throw new \Exception('redis password not match.');
+                throw new RedisException('Redis服务器身份验证失败', RedisException::AUTH_FAIL);
             }
         }
 
@@ -76,7 +84,7 @@ final class RedisConnection
      * @param $password
      * @return bool
      */
-    private function auth($password):bool
+    private function auth($password): bool
     {
         return $this->handle->auth($password);
     }
@@ -85,7 +93,7 @@ final class RedisConnection
      * 返回关于 Redis 服务器的各种信息和统计值。
      * @return string
      */
-    public function info():string
+    public function info(): string
     {
         return $this->handle->info();
     }
@@ -95,7 +103,7 @@ final class RedisConnection
      * @internal
      * @return bool
      */
-    public function ping():bool
+    public function ping(): bool
     {
         return $this->handle->ping() === 'PONG';
     }
@@ -106,7 +114,7 @@ final class RedisConnection
      * @internal
      * @return string
      */
-    public function echoMessage(string $msg):string
+    public function echoMessage(string $msg): string
     {
         return $this->handle->echo($msg);
     }

@@ -133,7 +133,7 @@ final class RedisServer
     public function configGet($key = '*'):array
     {
         //这个参数就是这个样子的,只有两个
-        return $this->handle->config('GET', $key);
+        return $this->handle->config('GET', $key,null);
     }
 
     /**
