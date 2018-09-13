@@ -16,4 +16,7 @@ class RedisException extends \Exception
 
     //不识别的Redis数据类型
     const TYPE_UNKNOWN=4;
+
+    //数值增减方法的参数错误
+    const PARAM_ERROR_FOR_CREASE=5;
 }

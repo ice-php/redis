@@ -21,7 +21,7 @@ final class RedisInt extends RedisString
      * 数值增减
      * @param $diff int 1/-1/N/-N
      * @return int 操作过后的值
-     * @throws \Exception
+     * @throws RedisException
      */
     public function crease($diff = 1): int
     {
@@ -39,7 +39,7 @@ final class RedisInt extends RedisString
         }
 
         //不能为0
-        throw new \Exception('Crease Method parameter wrong:' . $diff);
+        throw new RedisException('数值增减方法的参数错误:'.$diff,RedisException::PARAM_ERROR_FOR_CREASE);
     }
 
 
