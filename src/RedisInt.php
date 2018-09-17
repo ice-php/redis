@@ -19,7 +19,7 @@ final class RedisInt extends RedisString
 
     /**
      * 数值增减
-     * @param $diff int 1/-1/N/-N
+     * @param $diff int|string 1/-1/N/-N
      * @return int 操作过后的值
      * @throws RedisException
      */

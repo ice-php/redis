@@ -40,7 +40,6 @@ final class RedisConnection
     /**
      * 创建连接句柄
      * @return \redis 实际Redis连接句柄
-     * @throws RedisException
      */
     public function connect(): \redis
     {
@@ -53,24 +52,24 @@ final class RedisConnection
         $start = timeLog();
 
         // 取此集合的配置
-        try {
-            $config = $config = config('redis');
-        } catch (ConfigException $e) {
-            throw new RedisException('无法读取Redis配置文件', RedisException::MISS_CONFIG);
+
+        $config = $config = configDefault('', 'redis');
+        if (!$config) {
+            trigger_error('无法读取Redis配置文件(redis)', E_USER_ERROR);
         }
 
         //尝试连接,出错就抛异常吧
         $this->handle = new \redis();
         $success = $this->handle->connect($config['hostname'], $config['port']);
         if (!$success) {
-            throw new RedisException('无法连接Redis服务器', RedisException::CONNECT_FAIL);
+            trigger_error('无法连接Redis服务器(' . $config['hostname'] . ':' . $config['port'] . ')', E_USER_ERROR);
         }
 
         //如果设置了密码,要通过AUTH
         if (isset($config['password']) and $config['password']) {
             //如果密码不正确,提示
             if (!$this->auth($config['password'])) {
-                throw new RedisException('Redis服务器身份验证失败', RedisException::AUTH_FAIL);
+                trigger_error('Redis服务器身份验证失败', E_USER_ERROR);
             }
         }
 

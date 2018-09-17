@@ -30,7 +30,6 @@ final class Redis
 
     /**
      * 获取连接对象
-     * @throws RedisException
      */
     private static function handle()
     {
@@ -52,7 +51,6 @@ final class Redis
     /**
      * 获取连接对象
      * @return RedisConnection
-     * @throws RedisException
      */
     public static function connection()
     {
@@ -66,7 +64,6 @@ final class Redis
     /**
      * 删除一个存储键或多个
      * @param $key string|array 一个或多个键
-     * @throws RedisException
      */
     public static function delete($key)
     {
@@ -77,7 +74,6 @@ final class Redis
      * 获取一个键对应的Redis对象
      * @param $key string 键
      * @return null|RedisHash|RedisList|RedisSet|RedisSortedSet|RedisString
-     * @throws RedisException
      */
     public static function get($key)
     {
@@ -101,7 +97,8 @@ final class Redis
             case \redis::REDIS_NOT_FOUND:
                 return null;
             default:
-                throw new RedisException('不识别的Redis数据类型:' . $type, RedisException::TYPE_UNKNOWN);
+                trigger_error('不识别的Redis数据类型:' . $type, E_USER_ERROR);
+                return null;
         }
     }
 
@@ -109,7 +106,6 @@ final class Redis
      * 获取一个String类型的存储值
      * @param $key String 键
      * @return string
-     * @throws RedisException
      */
     public static function getString($key): string
     {
@@ -122,7 +118,6 @@ final class Redis
      * @param $key String 键
      * @param $field string 域
      * @return string
-     * @throws RedisException
      */
     public static function getHash($key, $field): string
     {
@@ -135,7 +130,6 @@ final class Redis
      * @param $key String 键
      * @param $index string 索引
      * @return string
-     * @throws RedisException
      */
     public static function getList($key, $index): string
     {
@@ -147,7 +141,6 @@ final class Redis
      * 获取一个集合类型的存储值
      * @param $key String 键
      * @return array
-     * @throws RedisException
      */
     public static function getSet($key): array
     {
@@ -159,7 +152,6 @@ final class Redis
      * 获取一个SortedSet类型的存储值
      * @param $key String 键
      * @return array
-     * @throws RedisException
      */
     public static function getSortedSet($key): array
     {
@@ -171,7 +163,6 @@ final class Redis
      * 获取所有键
      * @param $pattern string 模式字符串
      * @return array
-     * @throws RedisException
      */
     public static function listKeys($pattern): array
     {
@@ -182,7 +173,6 @@ final class Redis
     /**
      * 随机获取一个键
      * @return string
-     * @throws RedisException
      */
     public static function getRandomKey(): string
     {
@@ -193,7 +183,6 @@ final class Redis
      * 判断是否存在指定的键
      * @param $key string 键
      * @return bool
-     * @throws RedisException
      */
     public static function exists($key): bool
     {
@@ -204,7 +193,6 @@ final class Redis
      * 返回指定键的存储类型(原生)
      * @param $key string 键
      * @return int 常量
-     * @throws RedisException
      */
     public static function getType($key): int
     {
@@ -218,7 +206,6 @@ final class Redis
      * @param bool $replace 存在时是否覆盖
      * @param int $expire 生存时间(秒)
      * @return RedisString
-     * @throws RedisException
      */
     public static function createString($key, $value = '', $replace = true, $expire = 0): RedisString
     {
@@ -239,7 +226,6 @@ final class Redis
      * @param bool $replace 是否覆盖
      * @param int $expire 生存期
      * @return RedisBit
-     * @throws RedisException
      */
     public static function createBit($key, $value = 0, $replace = true, $expire = 0): RedisBit
     {
@@ -255,7 +241,6 @@ final class Redis
      * @param bool $replace 是否覆盖
      * @param int $expire 生存期
      * @return RedisInt
-     * @throws RedisException
      */
     public static function createInt($key, $value = 0, $replace = true, $expire = 0): RedisInt
     {
@@ -271,7 +256,6 @@ final class Redis
      * @param bool $replace 是否覆盖
      * @param int $expire 生存期
      * @return RedisFloat
-     * @throws RedisException
      */
     public static function createFloat($key, $value = 0.0, $replace = true, $expire = 0): RedisFloat
     {
@@ -285,7 +269,6 @@ final class Redis
      * @param $key string 名称
      * @param array $fields 初始值
      * @return RedisHash
-     * @throws RedisException
      */
     public static function createHash($key, array $fields = null): RedisHash
     {
@@ -306,7 +289,6 @@ final class Redis
      * @param $key string 键名
      * @param mixed $values 要保存的值
      * @return RedisList
-     * @throws RedisException
      */
     public static function createList($key, $values = null): RedisList
     {
@@ -327,7 +309,6 @@ final class Redis
      * @param $key string  键
      * @param null $members 元素或元素数组
      * @return RedisSet
-     * @throws RedisException
      */
     public static function createSet($key, $members = null): RedisSet
     {
@@ -350,7 +331,6 @@ final class Redis
      * @param $key string 键
      * @param array|null $members 成员
      * @return RedisSortedSet
-     * @throws RedisException
      */
     public static function createSortedSet($key, array $members = null): RedisSortedSet
     {
@@ -366,7 +346,6 @@ final class Redis
      * @param array $kvs 键值对
      * @param bool $replace 是否覆盖
      * @return bool|int
-     * @throws RedisException
      */
     public static function multiSet(array $kvs, $replace = true)
     {
@@ -380,7 +359,6 @@ final class Redis
      * 返回所有(一个或多个)给定key的值。
      * @param array $keys
      * @return array
-     * @throws RedisException
      */
     public static function multiGet(array $keys): array
     {
@@ -400,7 +378,6 @@ final class Redis
      * 阻塞式头部弹出
      * @param array $keys 列表(List)的键名数组
      * @return array
-     * @throws RedisException
      */
     public static function blockLeftPop(array $keys): array
     {
@@ -411,7 +388,6 @@ final class Redis
      * 阻塞式尾部弹出
      * @param array $keys 列表(List)的键名数组
      * @return array
-     * @throws RedisException
      */
     public static function blockRightPop(array $keys): array
     {
@@ -421,7 +397,6 @@ final class Redis
     /**
      * 所有给定集合的交集。
      * @return array 结果集
-     * @throws RedisException
      */
     public static function inter(): array
     {
@@ -432,7 +407,6 @@ final class Redis
     /**
      * 计算所有给定集合的并集
      * @return array 结果集
-     * @throws RedisException
      */
     public static function union(): array
     {
@@ -443,7 +417,6 @@ final class Redis
     /**
      * 计算所有给定集合的差集
      * @return array 结果集
-     * @throws RedisException
      */
     public static function diff(): array
     {
@@ -455,7 +428,6 @@ final class Redis
      * 创建一个频道(实际上没干什么事)
      * @param $key string 频道名称
      * @return RedisChannel
-     * @throws RedisException
      */
     public static function createChannel($key): RedisChannel
     {
@@ -465,7 +437,6 @@ final class Redis
     /**
      * 订阅多个频道
      * @param callable $func 有消息时的回调方法
-     * @throws RedisException
      */
     public static function subscribe(callable $func)
     {
@@ -477,7 +448,6 @@ final class Redis
      * 订阅频道,按模式匹配
      * @param array $patterns 模式 (可以使用*)
      * @param callable $func
-     * @throws RedisException
      */
     public static function subscribeByPattern(array $patterns, callable $func): void
     {
@@ -487,7 +457,6 @@ final class Redis
     /**
      * 返回事务对象(单例)
      * @return RedisTransaction
-     * @throws RedisException
      */
     public static function transaction(): RedisTransaction
     {
@@ -501,7 +470,6 @@ final class Redis
     /**
      * 返回服务器对象(单例)
      * @return RedisServer
-     * @throws RedisException
      */
     public static function server(): RedisServer
     {
@@ -516,7 +484,6 @@ final class Redis
      * 切换到指定的数据库，数据库索引号用数字值指定，以 0 作为起始索引值。
      * @param $db int 数据库索引号
      * @return bool
-     * @throws RedisException
      */
     public static function selectDb($db): bool
     {
@@ -526,7 +493,6 @@ final class Redis
     /**
      * 返回当前数据库的 key 的数量。
      * @return int
-     * @throws RedisException
      */
     public static function length(): int
     {
@@ -539,7 +505,6 @@ final class Redis
      * @param string $pattern 匹配
      * @param int $count 返回数量
      * @return array|bool 返回的新游标和元素,如果新的游标为0,表示结束
-     * @throws RedisException
      */
     public function scan($iterator = 0, $pattern = '', $count = 0)
     {
