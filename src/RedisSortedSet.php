@@ -130,12 +130,12 @@ final class RedisSortedSet extends RedisElement
      * 返回有序集key中，所有score值介于min和max之间(包括等于min或max)的成员。
      * @param $min float 排序值
      * @param $max float 排序值
-     * @param null $limit 分页(以1开始)
+     * @param null $limit 分页(以1开始) 可能是数组
      * @param bool $withScores 是否附带返回score值
      * @param bool $desc 是否降序排列
      * @return array
      */
-    public function rangeByScore(float $min,float $max, ?int $limit = null,bool $withScores = true, bool $desc = false): array
+    public function rangeByScore(float $min,float $max,  $limit = null,bool $withScores = true, bool $desc = false): array
     {
         //组装 参数数组
         $options = [];
