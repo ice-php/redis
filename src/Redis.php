@@ -52,7 +52,7 @@ final class Redis
      * 获取连接对象
      * @return RedisConnection
      */
-    public static function connection():RedisConnection
+    public static function connection(): RedisConnection
     {
         //本句以防止尚未连接
         self::handle();
@@ -66,7 +66,7 @@ final class Redis
      * @param $key string|array 一个或多个键
      * @return int
      */
-    public static function delete($key):int
+    public static function delete($key): int
     {
         return self::handle()->delete($key);
     }
@@ -132,7 +132,7 @@ final class Redis
      * @param $index int 索引
      * @return string
      */
-    public static function getList(string $key,int $index): string
+    public static function getList(string $key, int $index): string
     {
         $obj = new RedisList(self::handle(), $key);
         return $obj->get($index);
@@ -203,18 +203,20 @@ final class Redis
     /**
      * 创建一个String存储对象
      * @param $key string 键
-     * @param $value string 值
+     * @param $value string 值  可选
      * @param bool $replace 存在时是否覆盖
      * @param int $expire 生存时间(秒)
      * @return RedisString
      */
-    public static function createString(string $key, string $value = '',bool $replace = true, int $expire = 0): RedisString
+    public static function createString(string $key, ?string $value = null, bool $replace = true, int $expire = 0): RedisString
     {
         //创建String对象
         $string = new RedisString(self::handle(), $key);
 
         //设置值
-        $string->set($value, $replace, $expire);
+        if (!is_null($value)) {
+            $string->set($value, $replace, $expire);
+        }
 
         //返回
         return $string;
@@ -228,10 +230,12 @@ final class Redis
      * @param int $expire 生存期
      * @return RedisBit
      */
-    public static function createBit(string $key,int $value = 0, bool $replace = true,int $expire = 0): RedisBit
+    public static function createBit(string $key, ?int $value = null, bool $replace = true, int $expire = 0): RedisBit
     {
         $bit = new RedisBit(self::handle(), $key);
-        $bit->set($value, $replace, $expire);
+        if (!is_null($value)) {
+            $bit->set($value, $replace, $expire);
+        }
         return $bit;
     }
 
@@ -243,10 +247,13 @@ final class Redis
      * @param int $expire 生存期
      * @return RedisInt
      */
-    public static function createInt(string $key,int $value = 0,bool $replace = true, int $expire = 0): RedisInt
+    public static function createInt(string $key, ?int $value = null, bool $replace = true, int $expire = 0): RedisInt
     {
         $int = new RedisInt(self::handle(), $key);
-        $int->set($value, $replace, $expire);
+
+        if (!is_null($value)) {
+            $int->set($value, $replace, $expire);
+        }
         return $int;
     }
 
@@ -258,10 +265,12 @@ final class Redis
      * @param int $expire 生存期
      * @return RedisFloat
      */
-    public static function createFloat(string $key,float $value = 0.0,bool $replace = true, int $expire = 0): RedisFloat
+    public static function createFloat(string $key, ?float $value = null, bool $replace = true, int $expire = 0): RedisFloat
     {
         $float = new RedisFloat(self::handle(), $key);
-        $float->set($value, $replace, $expire);
+        if (!is_null($value)) {
+            $float->set($value, $replace, $expire);
+        }
         return $float;
     }
 
@@ -271,13 +280,13 @@ final class Redis
      * @param array $fields 初始值
      * @return RedisHash
      */
-    public static function createHash(string $key, array $fields = null): RedisHash
+    public static function createHash(string $key, ?array $fields = null): RedisHash
     {
         //创建Hash对象
         $hash = new RedisHash(self::handle(), $key);
 
         //如果指定了值,则设置值
-        if ($fields) {
+        if (!is_null($fields)) {
             $hash->multiSet($fields);
         }
 
@@ -291,13 +300,13 @@ final class Redis
      * @param mixed $values 要保存的值
      * @return RedisList
      */
-    public static function createList(string $key, $values = null): RedisList
+    public static function createList(string $key, ?array $values = null): RedisList
     {
         //创建对象
         $list = new RedisList(self::handle(), $key);
 
         //如果指定了值,则添加
-        if ($values) {
+        if (!is_null($values)) {
             $list->insert($values);
         }
 
@@ -317,10 +326,12 @@ final class Redis
         $set = new RedisSet(self::handle(), $key);
 
         //如果指定了元素,则添加元素
-        if (is_array($members)) {
-            $set->addMulti($members);
-        } elseif ($members) {
-            $set->add($members);
+        if (!is_null($members)) {
+            if (is_array($members)) {
+                $set->addMulti($members);
+            } elseif ($members) {
+                $set->add($members);
+            }
         }
 
         //返回集合对象
@@ -333,10 +344,10 @@ final class Redis
      * @param array|null $members 成员
      * @return RedisSortedSet
      */
-    public static function createSortedSet(string $key, array $members = null): RedisSortedSet
+    public static function createSortedSet(string $key, ?array $members = null): RedisSortedSet
     {
         $set = new RedisSortedSet(self::handle(), $key);
-        if ($members) {
+        if (!is_double($members)) {
             $set->addMulti($members);
         }
         return $set;
@@ -370,7 +381,7 @@ final class Redis
      * 取配置中的超时设置
      * @return int
      */
-    public static function getTimeout():int
+    public static function getTimeout(): int
     {
         return intval(configDefault(30, 'redis', 'timeout'));
     }
@@ -439,7 +450,7 @@ final class Redis
      * 订阅多个频道
      * @param callable $func 有消息时的回调方法
      */
-    public static function subscribe(callable $func):void
+    public static function subscribe(callable $func): void
     {
         $channels = func_get_args();
         self::handle()->subscribe($channels, $func);
@@ -507,7 +518,7 @@ final class Redis
      * @param int $count 返回数量
      * @return array|bool 返回的新游标和元素,如果新的游标为0,表示结束
      */
-    public function scan(int $iterator = 0,string $pattern = '',int $count = 0)
+    public function scan(int $iterator = 0, string $pattern = '', int $count = 0)
     {
         return self::handle()->scan($iterator, $pattern, $count);
     }
