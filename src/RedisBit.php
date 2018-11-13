@@ -98,4 +98,42 @@ final class RedisBit extends RedisElement
     {
         return intval(parent::getRaw());
     }
+
+    /**
+     * 设置一个键值
+     * @param $value int 值
+     * @param bool $replace 是否覆盖
+     * @param int $expire 生存期
+     * @return bool 成功否
+     */
+    public function set(int $value,bool $replace = true, int $expire = 0):bool
+    {
+        $handle = $this->handle;
+
+        //如果允许覆盖
+        if ($replace) {
+            //覆盖并设置生存时间
+            if ($expire) {
+                return $handle->setex($this->key, $expire, $value);
+            }
+
+            //仅覆盖
+            return $handle->set($this->key, $value);
+        }
+
+        //不允许覆盖
+        $ret = $handle->setnx($this->key, $value);
+
+        //存储失败
+        if (!$ret) {
+            return $ret;
+        }
+
+        //如果要求设置生存时间
+        if ($expire) {
+            $this->setExpire($expire);
+        }
+
+        return true;
+    }
 }
