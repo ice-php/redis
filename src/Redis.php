@@ -111,7 +111,7 @@ final class Redis
     public static function getString($key): string
     {
         $obj = new RedisString(self::handle(), $key);
-        return $obj->getRaw();
+        return $obj->get();
     }
 
     /**
@@ -129,10 +129,10 @@ final class Redis
     /**
      * 获取一个List类型的指定索引存储值
      * @param $key String 键
-     * @param $index string 索引
+     * @param $index int 索引
      * @return string
      */
-    public static function getList(string $key,string $index): string
+    public static function getList(string $key,int $index): string
     {
         $obj = new RedisList(self::handle(), $key);
         return $obj->get($index);
