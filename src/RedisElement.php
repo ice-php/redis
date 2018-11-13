@@ -26,10 +26,10 @@ abstract class RedisElement
 
     /**
      * 构造一个字符串类
-     * @param redis $redis 主redis句柄
+     * @param \redis $redis 主redis句柄
      * @param $key string 键
      */
-    public function __construct(redis $redis, $key)
+    public function __construct(\redis $redis, string $key)
     {
         $this->handle = $redis;
         $this->key = $key;
@@ -51,7 +51,7 @@ abstract class RedisElement
      * 本机测试,总是返回False,???
      * @return string
      */
-    public function dump()
+    public function dump(): string
     {
         return $this->handle->dump($this->key);
     }
@@ -61,7 +61,7 @@ abstract class RedisElement
      * @param $milliseconds bool 以毫秒计量
      * @return int
      */
-    public function getExpire($milliseconds = false)
+    public function getExpire(bool $milliseconds = false): int
     {
         //以毫秒为单位返回
         if ($milliseconds) {
@@ -77,7 +77,7 @@ abstract class RedisElement
      * @param $db string 库名
      * @return bool
      */
-    public function move($db)
+    public function move(string $db): bool
     {
         return $this->handle->move($this->key, $db);
     }
@@ -88,7 +88,7 @@ abstract class RedisElement
      * @param bool $replace 如果新的键名存在,是否覆盖
      * @return bool 修改是否成功
      */
-    public function rename($newName, $replace = true)
+    public function rename(string $newName, bool $replace = true): bool
     {
         //根据是否覆盖
         $ret = $replace ? $this->handle->rename($this->key, $newName) : $this->handle->renameNx($this->key, $newName);
@@ -101,7 +101,7 @@ abstract class RedisElement
     }
 
     //返回当前存储对象的类型,字符串格式
-    abstract public function getType();
+    abstract public function getType():string ;
 
     /**
      * 设置生存时间
@@ -109,7 +109,7 @@ abstract class RedisElement
      * @param $milliseconds bool 以毫秒计量
      * @return bool
      */
-    public function setExpire($seconds, $milliseconds = false)
+    public function setExpire(int $seconds, bool $milliseconds = false): bool
     {
         //以毫秒为计量单位
         if ($milliseconds) {
@@ -126,7 +126,7 @@ abstract class RedisElement
      * @param $milliseconds bool 以毫秒计量
      * @return bool
      */
-    public function setExpireAt($timestamp, $milliseconds = false)
+    public function setExpireAt(int $timestamp, bool $milliseconds = false): bool
     {
         //以毫秒为计量单位
         if ($milliseconds) {
@@ -141,7 +141,7 @@ abstract class RedisElement
      * 返回引用次数
      * @return int
      */
-    public function getRefCount()
+    public function getRefCount(): int
     {
         return intval($this->handle->object('REFCOUNT', $this->key));
     }
@@ -151,7 +151,7 @@ abstract class RedisElement
      * 字符串raw int 列表:ziplist linkedlist 集合:intset hashtable 哈希表:zipmap hashtable 有序集合:ziplist skiplist
      * @return string
      */
-    public function getEncoding()
+    public function getEncoding(): string
     {
         return $this->handle->object('ENCODING', $this->key);
     }
@@ -160,7 +160,7 @@ abstract class RedisElement
      * 查看空转时间(无读写)
      * @return int 秒
      */
-    public function getIdleTime()
+    public function getIdleTime(): int
     {
         return intval($this->handle->object('IDLETIME', $this->key));
     }
@@ -169,7 +169,7 @@ abstract class RedisElement
      * 移除 key 的过期时间，key 将持久保持。
      * @return bool
      */
-    public function persist()
+    public function persist(): bool
     {
         return $this->handle->persist($this->key);
     }
