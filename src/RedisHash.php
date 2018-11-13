@@ -50,7 +50,7 @@ final class RedisHash extends RedisElement
      */
     public function multiGet(array $fields): array
     {
-        return $this->handle->hMGet($this->key, $fields);
+        return $this->handle->hMGet($this->key, $fields)?:[];
     }
 
     /**

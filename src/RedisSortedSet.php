@@ -188,8 +188,7 @@ final class RedisSortedSet extends RedisElement
 
     /**
      * 移除有序集key中，所有score值介于min和max之间(包括等于min或max)的成员。
-     * @param $min float 排序值
-     * @param $max float 排序值
+     * @param $min float 排序值 @param $max float 排序值
      * @return int 被移除成员的数量。
      */
     public function removeByScore(float $min, float $max): int
