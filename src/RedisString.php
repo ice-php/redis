@@ -82,7 +82,7 @@ class RedisString extends RedisElement
      */
     public function get():string
     {
-        return $this->handle->get($this->key);
+        return parent::getRaw();
     }
 
     /**

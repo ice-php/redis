@@ -173,4 +173,14 @@ abstract class RedisElement
     {
         return $this->handle->persist($this->key);
     }
+
+    /**
+     * 返回当前存储对象所关联的字符串值
+     * @return string
+     */
+    protected function getRaw():string
+    {
+        return strval($this->handle->get($this->key));
+    }
+
 }

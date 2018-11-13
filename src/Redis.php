@@ -111,7 +111,7 @@ final class Redis
     public static function getString($key): string
     {
         $obj = new RedisString(self::handle(), $key);
-        return $obj->get();
+        return $obj->getRaw();
     }
 
     /**

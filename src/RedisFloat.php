@@ -6,7 +6,7 @@ namespace icePHP;
 /**
  * 位类型,String类型的子类型
  */
-final class RedisFloat extends RedisString
+final class RedisFloat extends RedisElement
 {
     /**
      * 获取当前存储对象的类型(字符串格式)
@@ -36,6 +36,6 @@ final class RedisFloat extends RedisString
      */
     public function get(): float
     {
-        return floatval(parent::get());
+        return floatval(parent::getRaw());
     }
 }

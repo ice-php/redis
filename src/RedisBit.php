@@ -6,7 +6,7 @@ namespace icePHP;
 /**
  * 位类型,String类型的子类型
  */
-final class RedisBit extends RedisString
+final class RedisBit extends RedisElement
 {
     /**
      * 获取当前存储对象的类型(字符串格式)
@@ -88,5 +88,14 @@ final class RedisBit extends RedisString
     public function opNot(?string $target = null): int
     {
         return $this->handle->bitOp('NOT', $target ?: $this->key, $this->key);
+    }
+
+    /**
+     * 获取当前缓存值,转换成整数
+     * @return int
+     */
+    public function get(): int
+    {
+        return intval(parent::getRaw());
     }
 }
