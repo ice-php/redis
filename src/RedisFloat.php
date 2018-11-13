@@ -19,10 +19,10 @@ final class RedisFloat extends RedisString
 
     /**
      * 数值增减(浮点)
-     * @param $diff int 1/-1/N/-N
+     * @param $diff float 1/-1/N/-N
      * @return float 操作过后的值
      */
-    public function crease($diff = 1): float
+    public function crease(float $diff = 1): float
     {
         //参数修正为浮点
         $diff = floatval($diff);

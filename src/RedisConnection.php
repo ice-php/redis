@@ -29,7 +29,7 @@ final class RedisConnection
      * 获取连接对象单例
      * @return RedisConnection
      */
-    public static function instance()
+    public static function instance():self
     {
         if (!self::$instance) {
             self::$instance = new self();
@@ -80,10 +80,10 @@ final class RedisConnection
 
     /**
      * 如果开启了密码保护的话，在每次连接 Redis 服务器之后，就要使用 AUTH 命令解锁，解锁之后才能使用其他 Redis 命令。
-     * @param $password
+     * @param $password string
      * @return bool
      */
-    private function auth($password): bool
+    private function auth(string $password): bool
     {
         return $this->handle->auth($password);
     }

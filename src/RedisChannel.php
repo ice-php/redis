@@ -24,7 +24,7 @@ final class RedisChannel
      * @param \redis $redis 主Redis句柄
      * @param $key string 键
      */
-    public function __construct(\redis $redis, $key)
+    public function __construct(\redis $redis, string $key)
     {
         $this->handle = $redis;
         $this->key = $key;
@@ -35,7 +35,7 @@ final class RedisChannel
      * @param $message string 消息
      * @return int 接收到信息 message 的订阅者数量。
      */
-    public function publish($message)
+    public function publish(string $message):int
     {
         return $this->handle->publish($this->key, $message);
     }
@@ -45,7 +45,7 @@ final class RedisChannel
      * @param callable $func 有消息时的回调函数
      * @return $this
      */
-    public function subscribe(callable $func)
+    public function subscribe(callable $func):self
     {
         $this->handle->subscribe([$this->key], $func);
         return $this;

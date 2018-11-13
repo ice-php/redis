@@ -16,10 +16,14 @@ trait RedisSortable
      * - 'sort' => 'asc' or 'desc',
      * - 'alpha' => TRUE,
      * - 'store' => 'external-key'
-     * @return mixed
+     * @return array
      */
-    public function sort(array $options)
+    public function sort(array $options):array
     {
-        return $this->handle->sort($this->key, $options);
+        /**
+         * @var $handle \redis
+         */
+        $handle=$this->handle;
+        return $handle->sort($this->key, $options);
     }
 }

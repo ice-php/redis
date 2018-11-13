@@ -25,7 +25,7 @@ final class RedisList extends RedisElement
      * @param bool $replace 是否覆盖
      * @return int|bool 命令后，列表的长度。
      */
-    public function insert($value, $replace = true)
+    public function insert($value,bool $replace = true)
     {
         //覆盖
         if ($replace) {
@@ -64,7 +64,7 @@ final class RedisList extends RedisElement
      * @param bool $replace 是否覆盖
      * @return int 命令后，列表的长度。
      */
-    public function insertMulti(array $values, $replace = true): int
+    public function insertMulti(array $values, bool $replace = true): int
     {
         array_unshift($values, $this->key);
         return call_user_func_array([$this->handle, $replace ? 'lPush' : 'lPushx'], $values);
@@ -76,7 +76,7 @@ final class RedisList extends RedisElement
      * @param bool $replace 是否覆盖
      * @return int 操作后，表的长度。
      */
-    public function append($value, $replace = true): int
+    public function append($value, bool $replace = true): int
     {
         if ($replace) {
             return $this->handle->rPush($this->key, $value);
@@ -90,7 +90,7 @@ final class RedisList extends RedisElement
      * @param bool $replace 是否覆盖
      * @return int 操作后，表的长度。
      */
-    public function appendMulti(array $values, $replace = true): int
+    public function appendMulti(array $values,bool $replace = true): int
     {
         array_unshift($values, $this->key);
         return call_user_func_array([$this->handle, $replace ? 'rPush' : 'rPushx'], $values);
@@ -158,7 +158,7 @@ final class RedisList extends RedisElement
      * @param int $size 页长
      * @return array
      */
-    public function page($page = 1, $size = 20): array
+    public function page(int $page = 1, int $size = 20): array
     {
         return $this->getRange(($page - 1) * $size, $page * $size - 1);
     }
@@ -169,7 +169,7 @@ final class RedisList extends RedisElement
      * @param $count int 要删除的个数
      * @return int 被移除元素的数量。
      */
-    public function removeFirst($value, $count): int
+    public function removeFirst($value, int $count): int
     {
         return $this->handle->lRem($this->key, $value, $count);
     }
@@ -180,7 +180,7 @@ final class RedisList extends RedisElement
      * @param $count int 要删除的个数
      * @return int 被移除元素的数量。
      */
-    public function removeLast($value, $count): int
+    public function removeLast($value,int $count): int
     {
         return $this->handle->lRem($this->key, $value, -$count);
     }
@@ -201,7 +201,7 @@ final class RedisList extends RedisElement
      * @param $value mixed 要设置的值
      * @return BOOL 操作成功返回ok，否则返回错误信息
      */
-    public function set($index, $value): bool
+    public function set(int $index, $value): bool
     {
         return $this->handle->lSet($this->key, intval($index), $value);
     }
@@ -212,7 +212,7 @@ final class RedisList extends RedisElement
      * @param $stop int  结束位置 0开始
      * @return array
      */
-    public function trim($start, $stop): array
+    public function trim(int $start, int $stop): array
     {
         return $this->handle->lTrim($this->key, intval($start), intval($stop));
     }
@@ -222,7 +222,7 @@ final class RedisList extends RedisElement
      * @param $index int 索引 0开始
      * @return string
      */
-    public function get($index): string
+    public function get(int $index): string
     {
         return $this->handle->lIndex($this->key, intval($index));
     }
@@ -232,7 +232,7 @@ final class RedisList extends RedisElement
      * @param $targetList string 目标列表键名
      * @return string 被移动的元素值
      */
-    public function degrade($targetList): string
+    public function degrade(string $targetList): string
     {
         return $this->handle->rpoplpush($this->key, $targetList);
     }
@@ -243,7 +243,7 @@ final class RedisList extends RedisElement
      * @param int $timeout 超时秒数,0表示无限阻塞
      * @return string 被移动的元素值
      */
-    public function moveBlock($target, $timeout = 0): string
+    public function moveBlock(string $target, int $timeout = 0): string
     {
         return $this->handle->brpoplpush($this->key, $target, $timeout);
     }

@@ -24,7 +24,7 @@ final class RedisHash extends RedisElement
      * @param bool $replace 是否覆盖
      * @return bool|int
      */
-    public function set($field, $value, $replace = true)
+    public function set(string $field, $value, bool $replace = true)
     {
         //覆盖操作
         if ($replace) {
@@ -38,7 +38,7 @@ final class RedisHash extends RedisElement
      * @param $field string 域名
      * @return string
      */
-    public function get($field): string
+    public function get(string $field): string
     {
         return $this->handle->hGet($this->key, $field);
     }
@@ -109,7 +109,7 @@ final class RedisHash extends RedisElement
      * @param $diff int|float
      * @return float|int
      */
-    public function crease($field, $diff = 1)
+    public function crease(string $field, $diff = 1)
     {
         if (is_int($diff)) {
             return $this->handle->hIncrBy($this->key, $field, $diff);
@@ -142,7 +142,7 @@ final class RedisHash extends RedisElement
      * @param int $count 返回数量
      * @return array|bool 返回的新游标和元素,如果新的游标为0,表示结束
      */
-    public function scan($iterator = 0, $pattern = '', $count = 0): array
+    public function scan(int $iterator = 0,string $pattern = '', int $count = 0): array
     {
         return $this->handle->hScan($this->key, $iterator, $pattern, $count);
     }

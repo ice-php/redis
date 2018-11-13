@@ -69,7 +69,7 @@ final class RedisServer
      * @param $port string
      * @return bool
      */
-    public function slaveEOF($host, $port):bool
+    public function slaveEOF(string $host,string $port):bool
     {
         return $this->handle->slaveof($host, $port);
     }
@@ -96,10 +96,10 @@ final class RedisServer
 
     /**
      * 获取一定数量的慢日志
-     * @param null $count
+     * @param int $count
      * @return mixed
      */
-    public function slowLogGet($count = null)
+    public function slowLogGet(?int $count = null)
     {
         if ($count) {
             return $this->handle->slowlog("get $count");
@@ -142,7 +142,7 @@ final class RedisServer
      * @param $value string  配置值
      * @return array
      */
-    public function configSet($key, $value):array
+    public function configSet(string $key, string $value):array
     {
         return $this->handle->config('SET', $key, $value);
     }
@@ -217,7 +217,7 @@ final class RedisServer
      * @param $name string
      * @return bool return true if it can be set and false if not
      */
-    public function setName($name)
+    public function setName(string $name)
     {
         return $this->handle->client('setname', $name);
     }
@@ -227,7 +227,7 @@ final class RedisServer
      * @param $port
      * @return mixed
      */
-    public function kill($ip, $port)
+    public function kill(string $ip, string $port)
     {
         return $this->handle->client('kill', $ip . ':' . $port);
     }

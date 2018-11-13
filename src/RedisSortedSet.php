@@ -25,7 +25,7 @@ final class RedisSortedSet extends RedisElement
      * @param $member mixed 要保存的元素
      * @return int 被成功添加的新成员的数量，不包括那些被更新的、已经存在的成员。
      */
-    public function add($score, $member): int
+    public function add(float $score, $member): int
     {
         return $this->handle->zAdd($this->key, $score, $member);
     }
@@ -72,7 +72,7 @@ final class RedisSortedSet extends RedisElement
      * @param $max float 排序值
      * @return int 元素个数
      */
-    public function count($min, $max): int
+    public function count(float $min,float $max): int
     {
         return $this->handle->zCount($this->key, $min, $max);
     }
@@ -93,7 +93,7 @@ final class RedisSortedSet extends RedisElement
      * @param int $diff 增量,可以是负值
      * @return float member成员的新score值，以字符串形式表示。
      */
-    public function crease($member, $diff = 1): float
+    public function crease($member, float $diff = 1): float
     {
         return $this->handle->zIncrBy($this->key, $diff, $member);
     }
@@ -106,7 +106,7 @@ final class RedisSortedSet extends RedisElement
      * @param bool $desc 是否降序排列
      * @return array
      */
-    public function range($start, $stop, $withScore = true, $desc = false): array
+    public function range(float $start, float $stop, bool $withScore = true,bool $desc = false): array
     {
         //按降序获取
         if ($desc) {
@@ -135,7 +135,7 @@ final class RedisSortedSet extends RedisElement
      * @param bool $desc 是否降序排列
      * @return array
      */
-    public function rangeByScore($min, $max, $limit = null, $withScores = true, $desc = false): array
+    public function rangeByScore(float $min,float $max, ?int $limit = null,bool $withScores = true, bool $desc = false): array
     {
         //组装 参数数组
         $options = [];
@@ -161,7 +161,7 @@ final class RedisSortedSet extends RedisElement
      * @param $desc bool 是否降序排列
      * @return int 排名
      */
-    public function rank($member, $desc = false): int
+    public function rank($member,bool $desc = false): int
     {
         //获取降序排名
         if ($desc) {
@@ -178,7 +178,7 @@ final class RedisSortedSet extends RedisElement
      * @param $max int 排名
      * @return int 被移除成员的数量。
      */
-    public function removeByRank($min, $max): int
+    public function removeByRank(int $min,int $max): int
     {
         return $this->handle->zRemRangeByRank($this->key, intval($min), intval($max));
     }
@@ -189,7 +189,7 @@ final class RedisSortedSet extends RedisElement
      * @param $max float 排序值
      * @return int 被移除成员的数量。
      */
-    public function removeByScore($min, $max): int
+    public function removeByScore(float $min,float $max): int
     {
         return $this->handle->zRemRangeByScore($this->key, $min, $max);
     }
@@ -203,7 +203,7 @@ final class RedisSortedSet extends RedisElement
      * @param string $aggregate 聚合:SUM/min/max
      * @return int
      */
-    public function inter(array $sets, array $weights = null, $aggregate = 'SUM'): int
+    public function inter(array $sets, array $weights = null,string $aggregate = 'SUM'): int
     {
         return $this->handle->zInter($this->key, $sets, $weights, $aggregate);
     }
@@ -217,7 +217,7 @@ final class RedisSortedSet extends RedisElement
      * @param string $aggregate 聚合:SUM/min/max
      * @return int
      */
-    public function union(array $sets, array $weights = null, $aggregate = 'SUM'): int
+    public function union(array $sets, array $weights = null,string $aggregate = 'SUM'): int
     {
         return $this->handle->zUnion($this->key, $sets, $weights, $aggregate);
     }
@@ -229,7 +229,7 @@ final class RedisSortedSet extends RedisElement
      * @param int $count 返回数量
      * @return array|bool 返回的新游标和元素,如果新的游标为0,表示结束
      */
-    public function scan($iterator = 0, $pattern = '', $count = 0)
+    public function scan(int $iterator = 0, string $pattern = '', int $count = 0)
     {
         return $this->handle->zScan($this->key, $iterator, $pattern, $count);
     }

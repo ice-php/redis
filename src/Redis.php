@@ -19,7 +19,7 @@ final class Redis
     }
 
     /**
-     * @var Redis redis实际句柄
+     * @var \redis redis实际句柄
      */
     private static $handle;
 
@@ -31,7 +31,7 @@ final class Redis
     /**
      * 获取连接对象
      */
-    private static function handle()
+    private static function handle(): \redis
     {
         //如果已经连接,返回连接句柄
         if (self::$handle) {
@@ -52,7 +52,7 @@ final class Redis
      * 获取连接对象
      * @return RedisConnection
      */
-    public static function connection()
+    public static function connection():RedisConnection
     {
         //本句以防止尚未连接
         self::handle();
@@ -64,10 +64,11 @@ final class Redis
     /**
      * 删除一个存储键或多个
      * @param $key string|array 一个或多个键
+     * @return int
      */
-    public static function delete($key)
+    public static function delete($key):int
     {
-        self::handle()->delete($key);
+        return self::handle()->delete($key);
     }
 
     /**
@@ -75,7 +76,7 @@ final class Redis
      * @param $key string 键
      * @return null|RedisHash|RedisList|RedisSet|RedisSortedSet|RedisString
      */
-    public static function get($key)
+    public static function get(string $key)
     {
         //获取连接句柄
         $handle = self::handle();
@@ -119,7 +120,7 @@ final class Redis
      * @param $field string 域
      * @return string
      */
-    public static function getHash($key, $field): string
+    public static function getHash(string $key, string $field): string
     {
         $obj = new RedisHash(self::handle(), $key);
         return $obj->get($field);
@@ -131,7 +132,7 @@ final class Redis
      * @param $index string 索引
      * @return string
      */
-    public static function getList($key, $index): string
+    public static function getList(string $key,string $index): string
     {
         $obj = new RedisList(self::handle(), $key);
         return $obj->get($index);
@@ -142,7 +143,7 @@ final class Redis
      * @param $key String 键
      * @return array
      */
-    public static function getSet($key): array
+    public static function getSet(string $key): array
     {
         $obj = new RedisSet(self::handle(), $key);
         return $obj->get();
@@ -153,7 +154,7 @@ final class Redis
      * @param $key String 键
      * @return array
      */
-    public static function getSortedSet($key): array
+    public static function getSortedSet(string $key): array
     {
         $obj = new RedisSortedSet(self::handle(), $key);
         return $obj->get();
@@ -164,7 +165,7 @@ final class Redis
      * @param $pattern string 模式字符串
      * @return array
      */
-    public static function listKeys($pattern): array
+    public static function listKeys(string $pattern): array
     {
         //获取连接句柄
         return self::handle()->keys($pattern);
@@ -184,7 +185,7 @@ final class Redis
      * @param $key string 键
      * @return bool
      */
-    public static function exists($key): bool
+    public static function exists(string $key): bool
     {
         return self::handle()->exists($key);
     }
@@ -194,7 +195,7 @@ final class Redis
      * @param $key string 键
      * @return int 常量
      */
-    public static function getType($key): int
+    public static function getType(string $key): int
     {
         return self::handle()->type($key);
     }
@@ -207,7 +208,7 @@ final class Redis
      * @param int $expire 生存时间(秒)
      * @return RedisString
      */
-    public static function createString($key, $value = '', $replace = true, $expire = 0): RedisString
+    public static function createString(string $key, string $value = '',bool $replace = true, int $expire = 0): RedisString
     {
         //创建String对象
         $string = new RedisString(self::handle(), $key);
@@ -227,7 +228,7 @@ final class Redis
      * @param int $expire 生存期
      * @return RedisBit
      */
-    public static function createBit($key, $value = 0, $replace = true, $expire = 0): RedisBit
+    public static function createBit(string $key,int $value = 0, bool $replace = true,int $expire = 0): RedisBit
     {
         $bit = new RedisBit(self::handle(), $key);
         $bit->set($value, $replace, $expire);
@@ -242,7 +243,7 @@ final class Redis
      * @param int $expire 生存期
      * @return RedisInt
      */
-    public static function createInt($key, $value = 0, $replace = true, $expire = 0): RedisInt
+    public static function createInt(string $key,int $value = 0,bool $replace = true, int $expire = 0): RedisInt
     {
         $int = new RedisInt(self::handle(), $key);
         $int->set($value, $replace, $expire);
@@ -257,7 +258,7 @@ final class Redis
      * @param int $expire 生存期
      * @return RedisFloat
      */
-    public static function createFloat($key, $value = 0.0, $replace = true, $expire = 0): RedisFloat
+    public static function createFloat(string $key,float $value = 0.0,bool $replace = true, int $expire = 0): RedisFloat
     {
         $float = new RedisFloat(self::handle(), $key);
         $float->set($value, $replace, $expire);
@@ -270,7 +271,7 @@ final class Redis
      * @param array $fields 初始值
      * @return RedisHash
      */
-    public static function createHash($key, array $fields = null): RedisHash
+    public static function createHash(string $key, array $fields = null): RedisHash
     {
         //创建Hash对象
         $hash = new RedisHash(self::handle(), $key);
@@ -290,7 +291,7 @@ final class Redis
      * @param mixed $values 要保存的值
      * @return RedisList
      */
-    public static function createList($key, $values = null): RedisList
+    public static function createList(string $key, $values = null): RedisList
     {
         //创建对象
         $list = new RedisList(self::handle(), $key);
@@ -307,10 +308,10 @@ final class Redis
     /**
      * 创建一个集合(Set)对象
      * @param $key string  键
-     * @param null $members 元素或元素数组
+     * @param mixed $members 元素或元素数组
      * @return RedisSet
      */
-    public static function createSet($key, $members = null): RedisSet
+    public static function createSet(string $key, $members = null): RedisSet
     {
         //创建集合对象
         $set = new RedisSet(self::handle(), $key);
@@ -332,7 +333,7 @@ final class Redis
      * @param array|null $members 成员
      * @return RedisSortedSet
      */
-    public static function createSortedSet($key, array $members = null): RedisSortedSet
+    public static function createSortedSet(string $key, array $members = null): RedisSortedSet
     {
         $set = new RedisSortedSet(self::handle(), $key);
         if ($members) {
@@ -347,7 +348,7 @@ final class Redis
      * @param bool $replace 是否覆盖
      * @return bool|int
      */
-    public static function multiSet(array $kvs, $replace = true)
+    public static function multiSet(array $kvs, bool $replace = true)
     {
         if ($replace) {
             return self::handle()->mset($kvs);
@@ -369,7 +370,7 @@ final class Redis
      * 取配置中的超时设置
      * @return int
      */
-    public static function getTimeout()
+    public static function getTimeout():int
     {
         return intval(configDefault(30, 'redis', 'timeout'));
     }
@@ -429,7 +430,7 @@ final class Redis
      * @param $key string 频道名称
      * @return RedisChannel
      */
-    public static function createChannel($key): RedisChannel
+    public static function createChannel(string $key): RedisChannel
     {
         return new RedisChannel(self::handle(), $key);
     }
@@ -438,7 +439,7 @@ final class Redis
      * 订阅多个频道
      * @param callable $func 有消息时的回调方法
      */
-    public static function subscribe(callable $func)
+    public static function subscribe(callable $func):void
     {
         $channels = func_get_args();
         self::handle()->subscribe($channels, $func);
@@ -506,7 +507,7 @@ final class Redis
      * @param int $count 返回数量
      * @return array|bool 返回的新游标和元素,如果新的游标为0,表示结束
      */
-    public function scan($iterator = 0, $pattern = '', $count = 0)
+    public function scan(int $iterator = 0,string $pattern = '',int $count = 0)
     {
         return self::handle()->scan($iterator, $pattern, $count);
     }

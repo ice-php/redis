@@ -148,7 +148,7 @@ final class RedisSet extends RedisElement
      * @param int $count 返回数量
      * @return array|bool 返回的新游标和元素,如果新的游标为0,表示结束
      */
-    public function scan($iterator = 0, $pattern = '', $count = 0)
+    public function scan(int $iterator = 0, string $pattern = '', int $count = 0)
     {
         return $this->handle->sScan($this->key, $iterator, $pattern, $count);
     }

@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+
 namespace icePHP;
 
 /**
@@ -11,7 +12,7 @@ final class RedisBit extends RedisString
      * 获取当前存储对象的类型(字符串格式)
      * @return string
      */
-    public function getType():string
+    public function getType(): string
     {
         return 'Bit';
     }
@@ -22,7 +23,7 @@ final class RedisBit extends RedisString
      * @param $bit int 0/1
      * @return int 指定偏移量原来储存的位（"0"或"1"）.
      */
-    public function setBit($offset, $bit):int
+    public function setBit(int $offset, int $bit): int
     {
         return intval($this->handle->setBit($this->key, intval($offset), intval($bit)));
     }
@@ -32,7 +33,7 @@ final class RedisBit extends RedisString
      * @param $offset  int  偏移(位)
      * @return int 字符串值指定偏移量上的位(bit)。
      */
-    public function getBit($offset):int
+    public function getBit(int $offset): int
     {
         return intval($this->handle->getBit($this->key, intval($offset)));
     }
@@ -41,7 +42,7 @@ final class RedisBit extends RedisString
      * 统计字符串被设置为1的bit数.
      * @return int
      */
-    public function count():int
+    public function count(): int
     {
         return $this->handle->bitCount($this->key);
     }
@@ -50,7 +51,7 @@ final class RedisBit extends RedisString
      * 按位与,结果保存到当前对象
      * @return int 保存到 destkey 的字符串的长度，和输入 key 中最长的字符串长度相等。
      */
-    public function opAnd():int
+    public function opAnd(): int
     {
         $argv = func_get_args();
         array_unshift($argv, 'AND', $this->key);
@@ -61,7 +62,7 @@ final class RedisBit extends RedisString
      * 按位或,结果保存到当前对象
      * @return int 保存到 destkey 的字符串的长度，和输入 key 中最长的字符串长度相等。
      */
-    public function opOr():int
+    public function opOr(): int
     {
         $argv = func_get_args();
         array_unshift($argv, 'OR', $this->key);
@@ -72,7 +73,7 @@ final class RedisBit extends RedisString
      * 按位异或,结果保存到当前对象
      * @return int 保存到 destkey 的字符串的长度，和输入 key 中最长的字符串长度相等。
      */
-    public function opXor():int
+    public function opXor(): int
     {
         $argv = func_get_args();
         array_unshift($argv, 'XOR', $this->key);
@@ -84,7 +85,7 @@ final class RedisBit extends RedisString
      * @param string $target 目标对象名称 ,默认为本对象
      * @return int 保存到 destkey 的字符串的长度，和输入 key 中最长的字符串长度相等。
      */
-    public function opNot($target = null):int
+    public function opNot(?string $target = null): int
     {
         return $this->handle->bitOp('NOT', $target ?: $this->key, $this->key);
     }

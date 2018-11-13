@@ -23,7 +23,7 @@ final class RedisInt extends RedisString
      * @return int 操作过后的值
      * @throws RedisException
      */
-    public function crease($diff = 1): int
+    public function crease(int $diff = 1): int
     {
         //参数修正为整数
         $diff = intval($diff);

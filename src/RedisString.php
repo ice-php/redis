@@ -10,12 +10,12 @@ class RedisString extends RedisElement
 {
     /**
      * 设置一个键值
-     * @param $value mixed 值
+     * @param $value string 值
      * @param bool $replace 是否覆盖
      * @param int $expire 生存期
-     * @return $this|bool
+     * @return bool 成功否
      */
-    public function set($value, $replace = true, $expire = 0)
+    public function set(string $value,bool $replace = true, int $expire = 0):bool
     {
         $handle = $this->handle;
 
@@ -43,7 +43,7 @@ class RedisString extends RedisElement
             $this->setExpire($expire);
         }
 
-        return $this;
+        return true;
     }
 
     /**
@@ -61,7 +61,7 @@ class RedisString extends RedisElement
      * @param $value string 填充内容
      * @return int 被SETRANGE修改之后，字符串的长度。
      */
-    public function setRange($offset, $value): int
+    public function setRange(int $offset,string $value): int
     {
         return intval($this->handle->setRange($this->key, $offset, $value));
     }
@@ -71,7 +71,7 @@ class RedisString extends RedisElement
      * @param $value string 要追加的字符串
      * @return int 完成后的字符串长度
      */
-    public function append($value): int
+    public function append(string $value): int
     {
         return intval($this->handle->append($this->key, $value));
     }
@@ -80,7 +80,7 @@ class RedisString extends RedisElement
      * 返回当前存储对象所关联的字符串值
      * @return string
      */
-    public function get()
+    public function get():string
     {
         return $this->handle->get($this->key);
     }
@@ -92,7 +92,7 @@ class RedisString extends RedisElement
      * @param $end int
      * @return string
      */
-    public function getRange($start, $end): string
+    public function getRange(int $start,int $end): string
     {
         return $this->handle->getRange($this->key, $start, $end);
     }
@@ -102,7 +102,7 @@ class RedisString extends RedisElement
      * @param $value string 新值
      * @return string 原值
      */
-    public function getSet($value): string
+    public function getSet(string $value): string
     {
         return $this->handle->getSet($this->key, $value);
     }

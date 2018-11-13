@@ -41,7 +41,7 @@ abstract class RedisElement
      * 删除当前存储对象
      * @return int 删除掉的对象数目
      */
-    public function delete()
+    public function delete():int
     {
         return $this->handle->del($this->key);
     }
