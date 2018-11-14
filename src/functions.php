@@ -29,6 +29,15 @@ function redis(string $key, $value = null, bool $replace = true, int $expire = 0
     return Redis::create($key, $value, $replace, $expire);
 }
 
+/**
+ * 删除一个存储键或多个
+ * @param $keys string|array 一个或多个键
+ * @return int
+ */
+function redisDelete($keys):int
+{
+    return Redis::delete($keys);
+}
 
 /**
  * 创建一个Int存储对象
