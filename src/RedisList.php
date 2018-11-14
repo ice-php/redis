@@ -25,7 +25,7 @@ final class RedisList extends RedisElement
      * @param bool $replace 是否覆盖
      * @return int|bool 命令后，列表的长度。
      */
-    public function insert($value,bool $replace = true)
+    public function insert($value, bool $replace = true)
     {
         //覆盖
         if ($replace) {
@@ -90,7 +90,7 @@ final class RedisList extends RedisElement
      * @param bool $replace 是否覆盖
      * @return int 操作后，表的长度。
      */
-    public function appendMulti(array $values,bool $replace = true): int
+    public function appendMulti(array $values, bool $replace = true): int
     {
         array_unshift($values, $this->key);
         return call_user_func_array([$this->handle, $replace ? 'rPush' : 'rPushx'], $values);
@@ -100,18 +100,18 @@ final class RedisList extends RedisElement
      * 移除并返回列表key的头元素。
      * @return string
      */
-    public function popLeft(): string
+    public function popLeft(): ?string
     {
-        return $this->handle->lPop($this->key);
+        return $this->handle->lPop($this->key) ?: null;
     }
 
     /**
      * 移除并返回列表key的尾元素。
      * @return string
      */
-    public function popRight(): string
+    public function popRight(): ?string
     {
-        return $this->handle->rPop($this->key);
+        return $this->handle->rPop($this->key) ?: null;
     }
 
     /**
@@ -180,7 +180,7 @@ final class RedisList extends RedisElement
      * @param $count int 要删除的个数
      * @return int 被移除元素的数量。
      */
-    public function removeLast($value,int $count): int
+    public function removeLast($value, int $count): int
     {
         return $this->handle->lRem($this->key, $value, -$count);
     }
