@@ -19,7 +19,6 @@
   ],
   "require": {
     "php": ">=7.1.0",
-    "predis/predis": "*",
     "ice-php/functions": "dev-master",
     "ice-php/config": "dev-master",
     "ice-php/debug": "dev-master"

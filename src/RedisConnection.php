@@ -52,7 +52,6 @@ final class RedisConnection
         $start = timeLog();
 
         // 取此集合的配置
-
         $config = $config = configDefault('', 'redis');
         if (!$config) {
             trigger_error('无法读取Redis配置文件(redis)', E_USER_ERROR);
