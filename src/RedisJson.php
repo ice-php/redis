@@ -37,6 +37,20 @@ class RedisJson extends RedisElement
      */
     public function get()
     {
-        return json_decode(parent::getRaw());
+        //获取保存值
+        $raw = parent::getRaw();
+        if (is_null($raw)) {
+            return null;
+        }
+
+        //JSON解码
+        $decoded = json_decode($raw);
+
+        //如果解码失败,返回原始内容
+        if (is_null($decoded)) {
+            return $raw;
+        }
+
+        return $decoded;
     }
 }
