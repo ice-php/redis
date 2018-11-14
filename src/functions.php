@@ -19,14 +19,14 @@ function redisString(string $key, ?string $value = null, bool $replace = true, i
 /**
  * 创建一个String存储对象,与redisString 相同
  * @param $key string 键
- * @param $value string 值
+ * @param $value mixed 值
  * @param bool $replace 存在时是否覆盖
  * @param int $expire 生存时间(秒)
- * @return RedisString
+ * @return RedisJson
  */
-function redis(string $key, ?string $value = null, bool $replace = true, int $expire = 0): RedisString
+function redis(string $key, $value = null, bool $replace = true, int $expire = 0): RedisJson
 {
-    return Redis::createString($key, $value, $replace, $expire);
+    return Redis::create($key, $value, $replace, $expire);
 }
 
 
@@ -64,7 +64,7 @@ function redisFloat(string $key, ?float $value = null, bool $replace = true, int
  * @param int $expire 生存期
  * @return RedisBit
  */
-function redisBit(string $key,  ?int $value = null, bool $replace = true, int $expire = 0): RedisBit
+function redisBit(string $key, ?int $value = null, bool $replace = true, int $expire = 0): RedisBit
 {
     return Redis::createBit($key, $value, $replace, $expire);
 }
@@ -86,7 +86,7 @@ function redisHash(string $key, ?array $fields = null): RedisHash
  * @param mixed $values 要保存的值
  * @return RedisList
  */
-function redisList(string $key,?array $values = null): RedisList
+function redisList(string $key, ?array $values = null): RedisList
 {
     return Redis::createList($key, $values);
 }

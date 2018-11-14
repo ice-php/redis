@@ -223,6 +223,23 @@ final class Redis
     }
 
     /**
+     * 创建一个存储混编类型的存储对象
+     * @param string $key
+     * @param null $value
+     * @param bool $replace
+     * @param int $expire
+     * @return RedisJson
+     */
+    public static function create(string $key, $value = null, bool $replace = true, int $expire = 0): RedisJson
+    {
+        $json = new RedisJson(self::handle(), $key);
+        if (!is_null($value)) {
+            $json->set($value, $replace, $expire);
+        }
+        return $json;
+    }
+
+    /**
      * 创建一个BIT存储对象
      * @param $key string Redis 键
      * @param int $value 值

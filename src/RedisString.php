@@ -15,35 +15,9 @@ class RedisString extends RedisElement
      * @param int $expire 生存期
      * @return bool 成功否
      */
-    public function set(string $value,bool $replace = true, int $expire = 0):bool
+    public function set(string $value, bool $replace = true, int $expire = 0): bool
     {
-        $handle = $this->handle;
-
-        //如果允许覆盖
-        if ($replace) {
-            //覆盖并设置生存时间
-            if ($expire) {
-                return $handle->setex($this->key, $expire, $value);
-            }
-
-            //仅覆盖
-            return $handle->set($this->key, $value);
-        }
-
-        //不允许覆盖
-        $ret = $handle->setnx($this->key, $value);
-
-        //存储失败
-        if (!$ret) {
-            return $ret;
-        }
-
-        //如果要求设置生存时间
-        if ($expire) {
-            $this->setExpire($expire);
-        }
-
-        return true;
+        return parent::setString($value, $replace, $expire);
     }
 
     /**
@@ -61,7 +35,7 @@ class RedisString extends RedisElement
      * @param $value string 填充内容
      * @return int 被SETRANGE修改之后，字符串的长度。
      */
-    public function setRange(int $offset,string $value): int
+    public function setRange(int $offset, string $value): int
     {
         return intval($this->handle->setRange($this->key, $offset, $value));
     }
@@ -80,7 +54,7 @@ class RedisString extends RedisElement
      * 返回当前存储对象所关联的字符串值
      * @return string
      */
-    public function get():string
+    public function get(): string
     {
         return parent::getRaw();
     }
@@ -92,7 +66,7 @@ class RedisString extends RedisElement
      * @param $end int
      * @return string
      */
-    public function getRange(int $start,int $end): string
+    public function getRange(int $start, int $end): string
     {
         return $this->handle->getRange($this->key, $start, $end);
     }
