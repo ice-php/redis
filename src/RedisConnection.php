@@ -29,7 +29,7 @@ final class RedisConnection
      * 获取连接对象单例
      * @return RedisConnection
      */
-    public static function instance():self
+    public static function instance(): self
     {
         if (!self::$instance) {
             self::$instance = new self();
@@ -73,7 +73,7 @@ final class RedisConnection
         }
 
         // 记录调试信息
-        debug("connect to redis {$config['hostname']} ,persist:" . timeLog($start) . 'ms');
+        debug("connect to redis {$config['hostname']} ,persist:" . timeLog($start) * 1000 . 'ms');
         return $this->handle;
     }
 
