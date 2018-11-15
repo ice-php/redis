@@ -63,12 +63,12 @@ final class Redis
 
     /**
      * 删除一个存储键或多个
-     * @param $key string|array 一个或多个键
-     * @return int
+     * @param $keys string|array 一个或多个键
+     * @return int 删除掉多少个值
      */
-    public static function delete($key): int
+    public static function delete(...$keys): int
     {
-        return self::handle()->delete($key);
+        return self::handle()->delete(...$keys);
     }
 
     /**

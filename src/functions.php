@@ -17,7 +17,7 @@ function redisString(string $key, ?string $value = null, bool $replace = true, i
 }
 
 /**
- * 创建一个String存储对象,与redisString 相同
+ * 创建一个Json存储对象,可存储任意类型的值
  * @param $key string 键
  * @param $value mixed 值
  * @param bool $replace 存在时是否覆盖
@@ -27,16 +27,6 @@ function redisString(string $key, ?string $value = null, bool $replace = true, i
 function redis(string $key, $value = null, bool $replace = true, int $expire = 0): RedisJson
 {
     return Redis::create($key, $value, $replace, $expire);
-}
-
-/**
- * 删除一个存储键或多个
- * @param $keys string|array 一个或多个键
- * @return int
- */
-function redisDelete($keys):int
-{
-    return Redis::delete($keys);
 }
 
 /**
@@ -120,4 +110,24 @@ function redisSet(string $key, $members = null): RedisSet
 function redisSortedSet(string $key, array $members = null): RedisSortedSet
 {
     return Redis::createSortedSet($key, $members);
+}
+
+/**
+ * 删除一个存储键或多个
+ * @param $keys string|array 一个或多个键
+ * @return int 删除掉多少个值
+ */
+function redisDelete(...$keys): int
+{
+    return Redis::delete(...$keys);
+}
+
+/**
+ * 判断是否存在指定的键
+ * @param $key string 键
+ * @return bool
+ */
+function redisExists(string $key): bool
+{
+    return Redis::exists($key);
 }
