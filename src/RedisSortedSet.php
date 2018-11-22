@@ -90,7 +90,7 @@ final class RedisSortedSet extends RedisElement
     /**
      * 为有序集key的成员member的score值加上增量increment。
      * @param $member mixed 元素
-     * @param int $diff 增量,可以是负值
+     * @param float $diff 增量,可以是负值
      * @return float member成员的新score值，以字符串形式表示。
      */
     public function crease($member, float $diff = 1): float
@@ -188,7 +188,8 @@ final class RedisSortedSet extends RedisElement
 
     /**
      * 移除有序集key中，所有score值介于min和max之间(包括等于min或max)的成员。
-     * @param $min float 排序值 @param $max float 排序值
+     * @param $min float 排序值
+     * @param $max float 排序值
      * @return int 被移除成员的数量。
      */
     public function removeByScore(float $min, float $max): int
