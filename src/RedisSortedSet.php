@@ -68,11 +68,11 @@ final class RedisSortedSet extends RedisElement
 
     /**
      * 返回有序集key中，score值在min和max之间(默认包括score值等于min或max)的成员数量
-     * @param $min float 排序值
-     * @param $max float 排序值
+     * @param $min mixed 排序值
+     * @param $max mixed 排序值
      * @return int 元素个数
      */
-    public function count(float $min, float $max): int
+    public function count($min,  $max): int
     {
         return $this->handle->zCount($this->key, $min, $max);
     }
