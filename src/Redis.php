@@ -364,7 +364,7 @@ final class Redis
     public static function createSortedSet(string $key, ?array $members = null): RedisSortedSet
     {
         $set = new RedisSortedSet(self::handle(), $key);
-        if (!is_double($members)) {
+        if (!is_null($members)) {
             $set->addMulti($members);
         }
         return $set;
