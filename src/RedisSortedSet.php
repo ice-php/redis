@@ -63,7 +63,7 @@ final class RedisSortedSet extends RedisElement
      */
     public function countByValue($min='-inf', $max='+inf'): int
     {
-        return $this->handle->zCount($this->key, $min, $max);
+        return $this->handle->zCount($this->key, strval($min), strval($max));
     }
 
     /**
@@ -160,6 +160,8 @@ final class RedisSortedSet extends RedisElement
             $options['limit'] = $limit;
         }
 
+        $min=strval($min);
+        $max=strval($max);
         //如果降序
         if ($desc) {
             return $this->handle->zRevRangeByScore($this->key, $min, $max, $options);
@@ -174,7 +176,7 @@ final class RedisSortedSet extends RedisElement
      * @param $desc bool 是否降序排列
      * @return int 排名
      */
-    public function rank($key, bool $desc = false): ?int
+    public function getRank($key, bool $desc = false): ?int
     {
         //获取降序排名
         if ($desc) {
@@ -202,7 +204,7 @@ final class RedisSortedSet extends RedisElement
      * @param $max string|float 值(分数),-inf表示负无穷,+inf表示正无穷,'(m' 表示开区间
      * @return int 被移除成员的数量。
      */
-    public function removeByValue($min, $max): int
+    public function deleteByValue($min, $max): int
     {
         return $this->handle->zRemRangeByScore($this->key, $min, $max);
     }
@@ -317,18 +319,6 @@ final class RedisSortedSet extends RedisElement
     {
         $this->unionSum($sets);
         return array_keys($this->all());
-    }
-
-    /**
-     * 从当前游标开始访问指定数量的元素
-     * @param int $iterator 游标(最初以0开始)
-     * @param string $pattern 匹配
-     * @param int $count 返回数量
-     * @return array|bool 返回的新游标和元素,如果新的游标为0,表示结束
-     */
-    public function scan(int $iterator = 0, string $pattern = '', int $count = 0)
-    {
-        return $this->handle->zScan($this->key, $iterator, $pattern, $count);
     }
 
     /**
