@@ -27,12 +27,12 @@ abstract class RedisElement
     /**
      * 构造一个字符串类
      * @param \redis $redis 主redis句柄
-     * @param $key string 键
+     * @param $name string 键
      */
-    public function __construct(\redis $redis, string $key)
+    public function __construct(\redis $redis, string $name)
     {
         $this->handle = $redis;
-        $this->key = $key;
+        $this->key = $name;
 
         $this->timeout = Redis::getTimeout();
     }

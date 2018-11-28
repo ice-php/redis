@@ -357,15 +357,15 @@ final class Redis
 
     /**
      * 创建一个有序集合
-     * @param $key string 键
-     * @param array|null $members 成员
+     * @param $name string 集合名称
+     * @param array|null $kvs 成员(键值数组)
      * @return RedisSortedSet
      */
-    public static function createSortedSet(string $key, ?array $members = null): RedisSortedSet
+    public static function createSortedSet(string $name, ?array $kvs = null): RedisSortedSet
     {
-        $set = new RedisSortedSet(self::handle(), $key);
-        if (!is_null($members)) {
-            $set->addMulti($members);
+        $set = new RedisSortedSet(self::handle(), $name);
+        if (!is_null($kvs)) {
+            $set->inserts($kvs);
         }
         return $set;
     }
