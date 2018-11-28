@@ -329,20 +329,19 @@ final class RedisSortedSet extends RedisElement
     public function select(string $pattern): \Iterator
     {
         //游标,每次查询必须从0开始
-        $iterator = 0;
+        $iterator = NULL;
         while (true) {
             //查询并更新游标
-            var_dump($iterator);var_dump($pattern);
             $ret = $this->handle->zScan($this->key, $iterator, $pattern,10);
-            var_dump($iterator);var_dump($ret);
+
             //没有更多数据了
             if (false === $ret) {
                 break;
             }
 
             //逐个返回
-            foreach ($ret as $key) {
-                yield $key;
+            foreach ($ret as $key => $val) {
+                yield [$key=>$val];
             }
         }
     }
