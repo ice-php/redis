@@ -332,8 +332,9 @@ final class RedisSortedSet extends RedisElement
         $iterator = 0;
         while (true) {
             //查询并更新游标
-            $ret = $this->handle->zScan($this->key, $iterator, $pattern);
-
+            var_dump($iterator);var_dump($pattern);
+            $ret = $this->handle->zScan($this->key, $iterator, $pattern,10);
+            var_dump($iterator);var_dump($ret);
             //没有更多数据了
             if (false === $ret) {
                 break;
