@@ -61,7 +61,7 @@ final class RedisSortedSet extends RedisElement
      * @param $max mixed 排序值
      * @return int 元素个数
      */
-    public function countByValue($min, $max): int
+    public function countByValue($min='-inf', $max='+inf'): int
     {
         return $this->handle->zCount($this->key, $min, $max);
     }
