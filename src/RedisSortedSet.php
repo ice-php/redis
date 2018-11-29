@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 namespace icePHP;
+
 /**
  * 有序集合
  */
@@ -50,8 +51,11 @@ final class RedisSortedSet extends RedisElement
      * @param $keys array(string|int|float) ,是元素值,不是分数值
      * @return int 被成功移除的成员的数量，不包括被忽略的成员。
      */
-    public function delete(...$keys): int
+    public function delete($keys): int
     {
+        if (!is_array($keys)) {
+            $keys = [$keys];
+        }
         return $this->handle->zRem($this->key, ...$keys);
     }
 
@@ -61,7 +65,7 @@ final class RedisSortedSet extends RedisElement
      * @param $max mixed 排序值
      * @return int 元素个数
      */
-    public function countByValue($min='-inf', $max='+inf'): int
+    public function countByValue($min = '-inf', $max = '+inf'): int
     {
         return $this->handle->zCount($this->key, strval($min), strval($max));
     }
@@ -160,8 +164,8 @@ final class RedisSortedSet extends RedisElement
             $options['limit'] = $limit;
         }
 
-        $min=strval($min);
-        $max=strval($max);
+        $min = strval($min);
+        $max = strval($max);
         //如果降序
         if ($desc) {
             return $this->handle->zRevRangeByScore($this->key, $min, $max, $options);
@@ -332,7 +336,7 @@ final class RedisSortedSet extends RedisElement
         $iterator = NULL;
         while (true) {
             //查询并更新游标
-            $ret = $this->handle->zScan($this->key, $iterator, $pattern,10);
+            $ret = $this->handle->zScan($this->key, $iterator, $pattern, 10);
 
             //没有更多数据了
             if (false === $ret) {
@@ -341,7 +345,7 @@ final class RedisSortedSet extends RedisElement
 
             //逐个返回
             foreach ($ret as $key => $val) {
-                yield [$key=>$val];
+                yield [$key => $val];
             }
         }
     }

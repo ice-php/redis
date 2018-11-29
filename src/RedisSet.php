@@ -34,28 +34,29 @@ final class RedisSet extends RedisElement
      * @param array $members 要添加的元素数组
      * @return int 被添加到集合中的新元素的数量，不包括被忽略的元素。
      */
-    public function addMulti(array $members): int
+    public function inserts(array $members): int
     {
-        array_unshift($members, $this->key);
-        return call_user_func_array([$this->handle, 'sAdd'], $members);
+        return $this->handle->sAdd($this->key, ...$members);
     }
 
     /**
      * 移除集合key中的一个或多个member元素，不存在的member元素会被忽略。
+     * @param array|string $members 要删除的元素
      * @return int 被成功移除的元素的数量，不包括被忽略的元素。
      */
-    public function remove(): int
+    public function delete($members): int
     {
-        $argv = func_get_args();
-        array_unshift($argv, $this->key);
-        return call_user_func_array([$this->handle, 'sRem'], $argv);
+        if (!is_array($members)) {
+            $members = [$members];
+        }
+        return $this->handle->sRem($this->key, ...$members);
     }
 
     /**
      * 返回集合key中的所有成员。
      * @return array
      */
-    public function get(): array
+    public function all(): array
     {
         return $this->handle->sMembers($this->key);
     }
@@ -74,7 +75,7 @@ final class RedisSet extends RedisElement
      * 返回集合key的基数(集合中元素的数量)。
      * @return int
      */
-    public function length(): int
+    public function count(): int
     {
         return $this->handle->sCard($this->key);
     }
@@ -85,7 +86,7 @@ final class RedisSet extends RedisElement
      * @param $member mixed 要移动的元素
      * @return bool 如果member元素被成功移除，返回1。
      */
-    public function degrade($target, $member): bool
+    public function move($target, $member): bool
     {
         return $this->handle->sMove($this->key, $target, $member);
     }
@@ -110,46 +111,77 @@ final class RedisSet extends RedisElement
 
     /**
      * 计算参数中给定的集合的交集并保存到当前集合对象 , 如果有则覆盖
+     * @param $sets array 集合名称数组
      * @return int 结果集中的成员数量。
      */
-    public function inter(): int
+    public function inter(array $sets): int
     {
-        $argv = func_get_args();
-        array_unshift($argv, $this->key);
-        return call_user_func_array([$this->handle, 'sInterStore'], $argv);
+        return $this->handle->sInterStore($this->key, ...$sets);
     }
 
     /**
      * 并集,保存到当前对象,如果有则覆盖
+     * @param $sets array 集合名称数组
      * @return int 结果集中的成员数量。
      */
-    public function union(): int
+    public function union(array $sets): int
     {
-        $argv = func_get_args();
-        array_unshift($argv, $this->key);
-        return call_user_func_array([$this->handle, 'sUnionStore'], $argv);
+        return $this->handle->sUnionStore($this->key, ...$sets);
+    }
+
+    /**
+     * 并集,返回结果集合
+     * @param array $sets 集合名称数组
+     * @return array
+     */
+    public function unionResult(array $sets): array
+    {
+        return $this->handle->sUnion(...$sets);
+    }
+
+    /**
+     * 交集,返回结果集合
+     * @param array $sets 集合名称数组
+     * @return array
+     */
+    public function interResult(array $sets): array
+    {
+        return $this->handle->sInter(...$sets);
     }
 
     /**
      * 差集,保存到当前对象,如果有则覆盖
+     * @param $sets array 集合名称数组
      * @return int 结果集中的成员数量。
      */
-    public function diff(): int
+    public function diff(array $sets): int
     {
-        $argv = func_get_args();
-        array_unshift($argv, $this->key);
-        return call_user_func_array([$this->handle, 'sDiffStore'], $argv);
+        return $this->handle->sDiffStore($this->key, ...$sets);
     }
 
+
     /**
-     * 从当前游标开始访问指定数量的元素
-     * @param int $iterator 游标(最初以0开始)
-     * @param string $pattern 匹配
-     * @param int $count 返回数量
-     * @return array|bool 返回的新游标和元素,如果新的游标为0,表示结束
+     * 匹配查询,无法分页
+     * @param string $pattern 通配符,可以使用* 表示 任意多个字符,?表示任意一个字符, [abc]表示其中a或者b或者c
+     * @return \Iterator
      */
-    public function scan(int $iterator = 0, string $pattern = '', int $count = 0)
+    public function select(string $pattern): \Iterator
     {
-        return $this->handle->sScan($this->key, $iterator, $pattern, $count);
+        //游标,每次查询必须从0开始
+        $iterator = NULL;
+        while (true) {
+            //查询并更新游标
+            $ret = $this->handle->sScan($this->key, $iterator, $pattern, 10);
+
+            //没有更多数据了
+            if (false === $ret) {
+                break;
+            }
+
+            //逐个返回
+            foreach ($ret as $val) {
+                yield  $val;
+            }
+        }
     }
 }

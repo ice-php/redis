@@ -41,7 +41,7 @@ abstract class RedisElement
      * 删除当前存储对象
      * @return int 删除掉的对象数目
      */
-    public function delete():int
+    public function deleteSelf():int
     {
         return $this->handle->del($this->key);
     }
@@ -77,7 +77,7 @@ abstract class RedisElement
      * @param $db string 库名
      * @return bool
      */
-    public function move(string $db): bool
+    public function moveSelf(string $db): bool
     {
         return $this->handle->move($this->key, $db);
     }
