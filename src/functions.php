@@ -7,65 +7,60 @@ namespace icePHP;
  * 创建一个String存储对象
  * @param $key string 键
  * @param $value string 值
- * @param bool $replace 存在时是否覆盖
  * @param int $expire 生存时间(秒)
  * @return RedisString
  */
-function redisString(string $key, ?string $value = null, bool $replace = true, int $expire = 0): RedisString
+function redisString(string $key, ?string $value = null, int $expire = 0): RedisString
 {
-    return Redis::createString($key, $value, $replace, $expire);
+    return Redis::createString($key, $value, $expire);
 }
 
 /**
  * 创建一个Json存储对象,可存储任意类型的值
  * @param $key string 键
  * @param $value mixed 值
- * @param bool $replace 存在时是否覆盖
  * @param int $expire 生存时间(秒)
  * @return RedisJson
  */
-function redis(string $key, $value = null, bool $replace = true, int $expire = 0): RedisJson
+function redis(string $key, $value = null, int $expire = 0): RedisJson
 {
-    return Redis::create($key, $value, $replace, $expire);
+    return Redis::create($key, $value, $expire);
 }
 
 /**
  * 创建一个Int存储对象
  * @param $key string Redis 键
  * @param int $value 值
- * @param bool $replace 是否覆盖
  * @param int $expire 生存期
  * @return RedisInt
  */
-function redisInt(string $key, ?int $value = null, bool $replace = true, int $expire = 0): RedisInt
+function redisInt(string $key, ?int $value = null, int $expire = 0): RedisInt
 {
-    return Redis::createInt($key, $value, $replace, $expire);
+    return Redis::createInt($key, $value, $expire);
 }
 
 /**
  * 创建一个FLOAT存储对象
  * @param $key string Redis 键
  * @param float $value 值
- * @param bool $replace 是否覆盖
  * @param int $expire 生存期
  * @return RedisFloat
  */
-function redisFloat(string $key, ?float $value = null, bool $replace = true, int $expire = 0): RedisFloat
+function redisFloat(string $key, ?float $value = null,  int $expire = 0): RedisFloat
 {
-    return Redis::createFloat($key, $value, $replace, $expire);
+    return Redis::createFloat($key, $value,  $expire);
 }
 
 /**
  * 创建一个BIT存储对象
  * @param $key string Redis 键
  * @param int $value 值
- * @param bool $replace 是否覆盖
  * @param int $expire 生存期
  * @return RedisBit
  */
-function redisBit(string $key, ?int $value = null, bool $replace = true, int $expire = 0): RedisBit
+function redisBit(string $key, ?int $value = null,  int $expire = 0): RedisBit
 {
-    return Redis::createBit($key, $value, $replace, $expire);
+    return Redis::createBit($key, $value, $expire);
 }
 
 /**

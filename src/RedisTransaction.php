@@ -71,7 +71,7 @@ final class RedisTransaction
     }
 
     /**
-     * 监视一个(或多个) key ，如果在事务执行之前这个(或这些) key 被其他命令所改动，那么事务将被打断。
+     * 监视一个(或多个) key ，如果在事务执行之前这个(或这些) key 被其他命令所改动，那么事务将被打断。(即回滚)
      * @param $keys string|array
      */
     public function watch($keys): void

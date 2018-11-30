@@ -15,9 +15,10 @@ final class RedisChannel
     protected $handle;
 
     /**
+     * 频道名称
      * @var string
      */
-    protected $key;
+    protected $name;
 
     /**
      * 构造一个字符串类
@@ -27,7 +28,7 @@ final class RedisChannel
     public function __construct(\redis $redis, string $key)
     {
         $this->handle = $redis;
-        $this->key = $key;
+        $this->name = $key;
     }
 
     /**
@@ -35,9 +36,9 @@ final class RedisChannel
      * @param $message string 消息
      * @return int 接收到信息 message 的订阅者数量。
      */
-    public function publish(string $message):int
+    public function publish(string $message): int
     {
-        return $this->handle->publish($this->key, $message);
+        return $this->handle->publish($this->name, $message);
     }
 
     /**
@@ -45,9 +46,28 @@ final class RedisChannel
      * @param callable $func 有消息时的回调函数
      * @return $this
      */
-    public function subscribe(callable $func):self
+    public function subscribe(callable $func): self
     {
-        $this->handle->subscribe([$this->key], $func);
+        $this->handle->subscribe([$this->name], $func);
         return $this;
+    }
+
+    /**
+     * 取消订阅本频道
+     * @return RedisChannel
+     */
+    public function unsubscribe(): self
+    {
+        $this->handle->unsubscribe([$this->name]);
+        return $this;
+    }
+
+    /**
+     * 计数订阅本频道的读者数量
+     * @return int
+     */
+    public function countReader(): int
+    {
+        return intval($this->handle->pubsub('numsub', [$this->name]));
     }
 }

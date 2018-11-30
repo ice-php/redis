@@ -87,14 +87,6 @@ final class RedisConnection
         return $this->handle->auth($password);
     }
 
-    /**
-     * 返回关于 Redis 服务器的各种信息和统计值。
-     * @return string
-     */
-    public function info(): string
-    {
-        return $this->handle->info();
-    }
 
     /**
      * 客户端向服务器发送一个 PING ，然后服务器返回客户端一个 PONG 。
@@ -115,5 +107,32 @@ final class RedisConnection
     public function echoMessage(string $msg): string
     {
         return $this->handle->echo($msg);
+    }
+
+    /**
+     * 关闭连接,没什么用处
+     */
+    public function close()
+    {
+        return $this->handle->rawCommand('QUIT');
+    }
+
+    /**
+     * 返回 CLIENT SETNAME 命令为连接设置的名字。 因为新创建的连接默认是没有名字的， 对于没有名字的连接， CLIENT GETNAME 返回空白回复。
+     * @return mixed
+     */
+    public function getName()
+    {
+        return $this->handle->client('getname');
+    }
+
+    /**
+     * 设置CLIENT的名称
+     * @param $name string
+     * @return bool return true if it can be set and false if not
+     */
+    public function setName(string $name)
+    {
+        return $this->handle->client('setname', $name);
     }
 }

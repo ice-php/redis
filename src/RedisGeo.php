@@ -22,28 +22,28 @@ class RedisGeo extends RedisElement
 
     /**
      * 存储一个坐标及相关名称
+     * @param $name string
      * @param $lng float
      * @param $lat float
-     * @param $name string
      * @return int 新添加的空间元素数量， 不包括那些已经存在但是被更新的元素。
      */
-    public function insert(float $lng, float $lat, string $name): int
+    public function insert(string  $name,float $lng, float $lat): int
     {
         return intval($this->handle->rawCommand('geoadd', [$this->name, $lng, $lat, $name]));
     }
 
     /**
      * 存储多个坐标及相关名称
-     * @param array $values [[lng(经),lat(纬),name],...]
+     * @param array $values [$name=>[lng(经),lat(纬)],...]
      * @return int 新添加的空间元素数量， 不包括那些已经存在但是被更新的元素。
      */
     public function inserts(array $values): int
     {
         $params = [$this->name];
-        foreach ($values as $row) {
-            $params[] = $row[0];
-            $params[] = $row[1];
-            $params[] = $row[2];
+        foreach ($values as $name=>$pos) {
+            $params[] = $pos[0];
+            $params[] = $pos[1];
+            $params[] = $name;
         }
         return intval($this->handle->rawCommand('geoadd', $params));
     }

@@ -502,6 +502,61 @@ final class Redis
     }
 
     /**
+     * 取消订阅指定频道
+     * @param array $channels
+     */
+    public static function unsubscribe(array $channels): void
+    {
+        self::handle()->unsubscribe($channels);
+    }
+
+    /**
+     * 取消全部订阅频道
+     */
+    public static function unsubscribeAll(): void
+    {
+        self::handle()->unsubscribe();
+    }
+
+    /**
+     * 取消订阅频道,按模式匹配
+     * @param array $patterns 可使用*
+     */
+    public static function unsubscribeByPattern(array $patterns): void
+    {
+        self::handle()->punsubscribe($patterns);
+    }
+
+    /**
+     * 列表当前所有活跃频道(至少有一个订阅者)
+     * @param string $pattern 可选,模式匹配频道名称
+     * @return array
+     */
+    public static function activeChannels(string $pattern = '*'): array
+    {
+        return self::handle()->pubsub('channels', $pattern);
+    }
+
+    /**
+     * 计数指定频道的订阅者数量
+     * @param array $channels 频道名称列表
+     * @return int
+     */
+    public static function countReader(array $channels): int
+    {
+        return intval(self::handle()->pubsub('numsub', $channels));
+    }
+
+    /**
+     * 计数本客户端订阅的频道总数
+     * @return int
+     */
+    public static function countChannels(): int
+    {
+        return intval(self::handle()->pubsub('numpat'));
+    }
+
+    /**
      * 返回事务对象(单例)
      * @return RedisTransaction
      */
@@ -552,7 +607,7 @@ final class Redis
      * @param int $count 建议每次搜索的数量,应该与键名平均长度成反比
      * @return \Iterator
      */
-    public function selectNames(string $pattern = '', int $count = 1000): \Iterator
+    static public function selectNames(string $pattern = '', int $count = 1000): \Iterator
     {
         $iterator = null;
         while (true) {
@@ -571,8 +626,17 @@ final class Redis
      * @param array $hypers 每个HLL的名称
      * @return int
      */
-    public function hyperCount(array $hypers): int
+    static public function hyperCount(array $hypers): int
     {
         return self::handle()->pfCount($hypers);
+    }
+
+    /**
+     * 返回 Redis服务器的时间
+     * @return array [秒时间戳,微秒]
+     */
+    public static function time(): array
+    {
+        return self::handle()->time();
     }
 }

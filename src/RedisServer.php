@@ -23,33 +23,42 @@ final class RedisServer
     }
 
     /**
-     * 异步(Asynchronously)重写 AOF 文件以反应当前数据库的状态。
+     * 同步保存当前数据库的数据到磁盘。
+     * 命令执行一个同步保存操作，将当前 Redis 实例的所有数据快照(snapshot)以 RDB 文件的形式保存到硬盘。
      * @internal
      * @return bool
      */
-    public function bgRewriteAOF():bool
+    public function save(): bool
     {
-        return $this->handle->bgrewriteaof();
+        return $this->handle->save();
     }
 
     /**
      * 在后台异步保存当前数据库的数据到磁盘。
+     * 在后台异步(Asynchronously)保存当前数据库的数据到磁盘。
+     * BGSAVE 命令执行之后立即返回 OK ，然后 Redis fork 出一个新子进程，原来的 Redis 进程(父进程)继续处理客户端请求，而子进程则负责将数据保存到磁盘，然后退出。
      * @internal
      * @return bool
      */
-    public function bgSave():bool
+    public function saveAsync(): bool
     {
         return $this->handle->bgsave();
     }
 
     /**
-     * 同步保存当前数据库的数据到磁盘。
+     * 异步(Asynchronously)重写 AOF 文件以反应当前数据库的状态。
+     * 执行一个 AOF文件 重写操作。重写会创建一个当前 AOF 文件的体积优化版本。
+     * 即使 BGREWRITEAOF 执行失败，也不会有任何数据丢失，因为旧的 AOF 文件在 BGREWRITEAOF 成功之前不会被修改。
+     * 重写操作只会在没有其他持久化工作在后台执行时被触发，也就是说：
+     * 如果 Redis 的子进程正在执行快照的保存工作，那么 AOF 重写的操作会被预定(scheduled)，等到保存工作完成之后再执行 AOF 重写。在这种情况下， BGREWRITEAOF 的返回值仍然是 OK ，但还会加上一条额外的信息，说明 BGREWRITEAOF 要等到保存操作完成之后才能执行。在 Redis 2.6 或以上的版本，可以使用 INFO 命令查看 BGREWRITEAOF 是否被预定。
+     * 如果已经有别的 AOF 文件重写在执行，那么 BGREWRITEAOF 返回一个错误，并且这个新的 BGREWRITEAOF 请求也不会被预定到下次执行。
+     * 从 Redis 2.4 开始， AOF 重写由 Redis 自行触发， BGREWRITEAOF 仅仅用于手动触发重写操作。
      * @internal
      * @return bool
      */
-    public function save():bool
+    public function saveAOF(): bool
     {
-        return $this->handle->save();
+        return $this->handle->bgrewriteaof();
     }
 
     /**
@@ -57,21 +66,9 @@ final class RedisServer
      * @internal
      * @return int
      */
-    public function lastSave():int
+    public function lastSave(): int
     {
         return $this->handle->lastSave();
-    }
-
-    /**
-     * SLAVEOF 命令用于在 Redis 运行时动态地修改复制(replication)功能的行为。
-     * @internal
-     * @param $host string
-     * @param $port string
-     * @return bool
-     */
-    public function slaveEOF(string $host,string $port):bool
-    {
-        return $this->handle->slaveof($host, $port);
     }
 
     /**
@@ -79,7 +76,7 @@ final class RedisServer
      * @internal
      * @return bool
      */
-    public function flushAll():bool
+    public function flushAll(): bool
     {
         return $this->handle->flushAll();
     }
@@ -89,9 +86,18 @@ final class RedisServer
      * @internal
      * @return bool
      */
-    public function flushDB():bool
+    public function flushDB(): bool
     {
         return $this->handle->flushDB();
+    }
+
+    /**
+     * 返回关于 Redis 服务器的各种信息和统计值。
+     * @return string
+     */
+    public function info(): string
+    {
+        return $this->handle->info();
     }
 
     /**
@@ -130,10 +136,10 @@ final class RedisServer
      * @param $key string 配置项名称 或 匹配模式(*)
      * @return array
      */
-    public function configGet($key = '*'):array
+    public function configGet($key = '*'): array
     {
         //这个参数就是这个样子的,只有两个
-        return $this->handle->config('GET', $key,null);
+        return $this->handle->config('GET', $key, null);
     }
 
     /**
@@ -142,7 +148,7 @@ final class RedisServer
      * @param $value string  配置值
      * @return array
      */
-    public function configSet(string $key, string $value):array
+    public function configSet(string $key, string $value): array
     {
         return $this->handle->config('SET', $key, $value);
     }
@@ -198,37 +204,8 @@ final class RedisServer
      * r : 客户端套接字（在事件 loop 中）是可读的（readable）
      * w : 客户端套接字（在事件 loop 中）是可写的（writeable）
      */
-    public function clientList():array
+    public function clientList(): array
     {
         return $this->handle->client('list');
-    }
-
-    /**
-     * 返回 CLIENT SETNAME 命令为连接设置的名字。 因为新创建的连接默认是没有名字的， 对于没有名字的连接， CLIENT GETNAME 返回空白回复。
-     * @return mixed
-     */
-    public function getName()
-    {
-        return $this->handle->client('getname');
-    }
-
-    /**
-     * 设置CLIENT的名称
-     * @param $name string
-     * @return bool return true if it can be set and false if not
-     */
-    public function setName(string $name)
-    {
-        return $this->handle->client('setname', $name);
-    }
-
-    /**
-     * @param $ip
-     * @param $port
-     * @return mixed
-     */
-    public function kill(string $ip, string $port)
-    {
-        return $this->handle->client('kill', $ip . ':' . $port);
     }
 }
