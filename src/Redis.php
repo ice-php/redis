@@ -31,7 +31,7 @@ final class Redis
     /**
      * 获取redis实际句柄
      */
-    private static function handle(): \redis
+    public static function handle(): \redis
     {
         //如果已经连接,返回连接句柄
         if (self::$handle) {
@@ -210,7 +210,7 @@ final class Redis
      * @param int $expire 生存时间(秒)
      * @return RedisString
      */
-    public static function createString(string $name, ?string $value = null, int $expire = 0): RedisString
+    public static function string(string $name, ?string $value = null, int $expire = 0): RedisString
     {
         //创建String对象
         $string = new RedisString(self::handle(), $name);
@@ -225,13 +225,23 @@ final class Redis
     }
 
     /**
+     * 创建一个脚本对象
+     * @return RedisScript
+     */
+    static public function script()
+    {
+        static $script;
+        return $script ?: ($script = new RedisScript(self::handle()));
+    }
+
+    /**
      * 创建一个存储混编类型的存储对象
      * @param string $name 存储对象的名称
      * @param null $value 要存储的值
      * @param int $expire
      * @return RedisJson
      */
-    public static function create(string $name, $value = null, int $expire = 0): RedisJson
+    public static function insert(string $name, $value = null, int $expire = 0): RedisJson
     {
         $json = new RedisJson(self::handle(), $name);
         if (!is_null($value)) {
@@ -247,7 +257,7 @@ final class Redis
      * @param int $expire 生存期
      * @return RedisBit
      */
-    public static function createBit(string $name, ?int $value = null, int $expire = 0): RedisBit
+    public static function bit(string $name, ?int $value = null, int $expire = 0): RedisBit
     {
         $bit = new RedisBit(self::handle(), $name);
         if (!is_null($value)) {
@@ -263,7 +273,7 @@ final class Redis
      * @param int $expire 生存期
      * @return RedisInt
      */
-    public static function createInt(string $name, ?int $value = null, int $expire = 0): RedisInt
+    public static function int(string $name, ?int $value = null, int $expire = 0): RedisInt
     {
         $int = new RedisInt(self::handle(), $name);
 
@@ -280,7 +290,7 @@ final class Redis
      * @param int $expire 生存期
      * @return RedisFloat
      */
-    public static function createFloat(string $name, ?float $value = null, int $expire = 0): RedisFloat
+    public static function float(string $name, ?float $value = null, int $expire = 0): RedisFloat
     {
         $float = new RedisFloat(self::handle(), $name);
         if (!is_null($value)) {
@@ -296,7 +306,7 @@ final class Redis
      * @param int $expire 过期时间(秒),默认无限
      * @return RedisHash
      */
-    public static function createHash(string $name, ?array $fields = null, int $expire = 0): RedisHash
+    public static function hash(string $name, ?array $fields = null, int $expire = 0): RedisHash
     {
         //创建Hash对象
         $hash = new RedisHash(self::handle(), $name);
@@ -320,7 +330,7 @@ final class Redis
      * @param int $expire 过期时间(秒),默认无限
      * @return RedisList
      */
-    public static function createList(string $name, ?array $values = null, int $expire = 0): RedisList
+    public static function list(string $name, ?array $values = null, int $expire = 0): RedisList
     {
         //创建对象
         $list = new RedisList(self::handle(), $name);
@@ -344,7 +354,7 @@ final class Redis
      * @param int $expire 过期时间(秒),默认无限
      * @return RedisSet
      */
-    public static function createSet(string $name, ?array $members = null, int $expire = 0): RedisSet
+    public static function set(string $name, ?array $members = null, int $expire = 0): RedisSet
     {
         //创建集合对象
         $set = new RedisSet(self::handle(), $name);
@@ -368,7 +378,7 @@ final class Redis
      * @param int $expire 过期时间(秒),默认无限
      * @return RedisSortedSet
      */
-    public static function createSortedSet(string $name, ?array $kvs = null, int $expire = 0): RedisSortedSet
+    public static function sortedSet(string $name, ?array $kvs = null, int $expire = 0): RedisSortedSet
     {
         //创建集合对象
         $set = new RedisSortedSet(self::handle(), $name);
@@ -476,7 +486,7 @@ final class Redis
      * @param $name string 频道名称
      * @return RedisChannel
      */
-    public static function createChannel(string $name): RedisChannel
+    public static function channel(string $name): RedisChannel
     {
         return new RedisChannel(self::handle(), $name);
     }
@@ -607,7 +617,7 @@ final class Redis
      * @param int $count 建议每次搜索的数量,应该与键名平均长度成反比
      * @return \Iterator
      */
-    static public function selectNames(string $pattern = '', int $count = 1000): \Iterator
+    static public function select(string $pattern = '*', int $count = 1000): \Iterator
     {
         $iterator = null;
         while (true) {
@@ -639,4 +649,5 @@ final class Redis
     {
         return self::handle()->time();
     }
+
 }

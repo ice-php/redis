@@ -46,9 +46,9 @@ function redisInt(string $key, ?int $value = null, int $expire = 0): RedisInt
  * @param int $expire 生存期
  * @return RedisFloat
  */
-function redisFloat(string $key, ?float $value = null,  int $expire = 0): RedisFloat
+function redisFloat(string $key, ?float $value = null, int $expire = 0): RedisFloat
 {
-    return Redis::createFloat($key, $value,  $expire);
+    return Redis::createFloat($key, $value, $expire);
 }
 
 /**
@@ -58,7 +58,7 @@ function redisFloat(string $key, ?float $value = null,  int $expire = 0): RedisF
  * @param int $expire 生存期
  * @return RedisBit
  */
-function redisBit(string $key, ?int $value = null,  int $expire = 0): RedisBit
+function redisBit(string $key, ?int $value = null, int $expire = 0): RedisBit
 {
     return Redis::createBit($key, $value, $expire);
 }
@@ -126,3 +126,40 @@ function redisExists(string $key): bool
 {
     return Redis::exists($key);
 }
+
+/**
+ * 返回一个Redis服务器对象
+ * @return RedisServer
+ */
+function redisServer(): RedisServer
+{
+    return Redis::server();
+}
+
+/**
+ * 返回一个Redis脚本对象
+ * @return RedisScript
+ */
+function redisScript(): RedisScript
+{
+    return Redis::script();
+}
+
+/**
+ * 返回一个Redis连接对象
+ * @return RedisConnection
+ */
+function redisConnection(): RedisConnection
+{
+    return Redis::connection();
+}
+
+/**
+ * 获取一个Redis原始句柄
+ * @return \redis
+ */
+function redisHandle(): \redis
+{
+    return Redis::handle();
+}
+
