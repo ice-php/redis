@@ -24,12 +24,12 @@ final class Redis
     private static $handle;
 
     /**
-     * @var RedisConnection
+     * @var RedisConnection 连接对象
      */
     private static $connection;
 
     /**
-     * 获取连接对象
+     * 获取redis实际句柄
      */
     private static function handle(): \redis
     {
@@ -62,39 +62,42 @@ final class Redis
     }
 
     /**
-     * 删除一个存储键或多个
-     * @param $keys string|array 一个或多个键
-     * @return int 删除掉多少个值
+     * 删除一个或多个存储对象
+     * @param $names string|array 一个或多个存储对象的名称
+     * @return int 删除掉多少个存储对象
      */
-    public static function delete(...$keys): int
+    public static function delete($names): int
     {
-        return self::handle()->delete(...$keys);
+        if (!is_array($names)) {
+            $names = [$names];
+        }
+        return self::handle()->delete(...$names);
     }
 
     /**
-     * 获取一个键对应的Redis对象
-     * @param $key string 键
+     * 获取一个名称对应的Redis对象
+     * @param $name string 存储对象名称
      * @return null|RedisHash|RedisList|RedisSet|RedisSortedSet|RedisString
      */
-    public static function get(string $key)
+    public static function get(string $name)
     {
         //获取连接句柄
         $handle = self::handle();
 
         //获取存储对象的类型
-        $type = $handle->type($key);
+        $type = $handle->type($name);
 
         switch ($type) {
             case \redis::REDIS_STRING:
-                return new RedisString($handle, $key);
+                return new RedisString($handle, $name);
             case \redis::REDIS_HASH:
-                return new RedisHash($handle, $key);
+                return new RedisHash($handle, $name);
             case \redis::REDIS_LIST:
-                return new RedisList($handle, $key);
+                return new RedisList($handle, $name);
             case \redis::REDIS_SET:
-                return new RedisSet($handle, $key);
+                return new RedisSet($handle, $name);
             case \redis::REDIS_ZSET:
-                return new RedisSortedSet($handle, $key);
+                return new RedisSortedSet($handle, $name);
             case \redis::REDIS_NOT_FOUND:
                 return null;
             default:
@@ -105,117 +108,116 @@ final class Redis
 
     /**
      * 获取一个String类型的存储值
-     * @param $key String 键
+     * @param $name String 存储对象的名称
      * @return string
      */
-    public static function getString($key): string
+    public static function getString($name): string
     {
-        $obj = new RedisString(self::handle(), $key);
+        $obj = new RedisString(self::handle(), $name);
         return $obj->get();
     }
 
     /**
      * 获取一个Hash类型的指定域存储值
-     * @param $key String 键
-     * @param $field string 域
+     * @param $name String Hash表的名称
+     * @param $key string 要读取的Hash键
      * @return string
      */
-    public static function getHash(string $key, string $field): string
+    public static function getHash(string $name, string $key): string
     {
-        $obj = new RedisHash(self::handle(), $key);
-        return $obj->get($field);
+        $obj = new RedisHash(self::handle(), $name);
+        return $obj->get($key);
     }
 
     /**
      * 获取一个List类型的指定索引存储值
-     * @param $key String 键
-     * @param $index int 索引
+     * @param $name String 列表的名称
+     * @param $index int 要读取的列表索引
      * @return string
      */
-    public static function getList(string $key, int $index): string
+    public static function getList(string $name, int $index): string
     {
-        $obj = new RedisList(self::handle(), $key);
+        $obj = new RedisList(self::handle(), $name);
         return $obj->get($index);
     }
 
     /**
      * 获取一个集合类型的存储值
-     * @param $key String 键
-     * @return array
+     * @param $name String 集合的名称
+     * @return array 集合的全部值
      */
-    public static function getSet(string $key): array
+    public static function getSet(string $name): array
     {
-        $obj = new RedisSet(self::handle(), $key);
-        return $obj->get();
+        $obj = new RedisSet(self::handle(), $name);
+        return $obj->all();
     }
 
     /**
      * 获取一个SortedSet类型的存储值
-     * @param $key String 键
-     * @return array
+     * @param $name String 有序集合的名称
+     * @return array 集合的全部值
      */
-    public static function getSortedSet(string $key): array
+    public static function getSortedSet(string $name): array
     {
-        $obj = new RedisSortedSet(self::handle(), $key);
-        return $obj->get();
+        $obj = new RedisSortedSet(self::handle(), $name);
+        return $obj->all();
     }
 
     /**
-     * 获取所有键
+     * 获取所有对象的名称
      * @param $pattern string 模式字符串
      * @return array
      */
-    public static function listKeys(string $pattern): array
+    public static function listNames(string $pattern): array
     {
         //获取连接句柄
         return self::handle()->keys($pattern);
     }
 
     /**
-     * 随机获取一个键
+     * 随机获取一个存储对象名称
      * @return string
      */
-    public static function getRandomKey(): string
+    public static function getRandomName(): string
     {
         return self::handle()->randomKey();
     }
 
     /**
-     * 判断是否存在指定的键
-     * @param $key string 键
+     * 判断是否存在指定的存储对象
+     * @param $name string 存储对象的名称
      * @return bool
      */
-    public static function exists(string $key): bool
+    public static function exists(string $name): bool
     {
-        return self::handle()->exists($key);
+        return self::handle()->exists($name);
     }
 
     /**
-     * 返回指定键的存储类型(原生)
-     * @param $key string 键
+     * 返回指定名称的存储类型(原生)
+     * @param $name string 存储对象的名称
      * @return int 常量
      */
-    public static function getType(string $key): int
+    public static function getType(string $name): int
     {
-        return self::handle()->type($key);
+        return self::handle()->type($name);
     }
 
     /**
      * 创建一个String存储对象
-     * @param $key string 键
-     * @param $value string 值  可选
-     * @param bool $replace 存在时是否覆盖
+     * @param $name string 存储对象的名称
+     * @param $value string 值  可选,非空时将覆盖
      * @param int $expire 生存时间(秒)
      * @return RedisString
      */
-    public static function createString(string $key, ?string $value = null, bool $replace = true, int $expire = 0): RedisString
+    public static function createString(string $name, ?string $value = null, int $expire = 0): RedisString
     {
         //创建String对象
-        $string = new RedisString(self::handle(), $key);
+        $string = new RedisString(self::handle(), $name);
 
         //设置值
         if (!is_null($value)) {
-            $string->set($value, $replace, $expire);
+            $string->set($value, $expire);
         }
 
         //返回
@@ -224,88 +226,88 @@ final class Redis
 
     /**
      * 创建一个存储混编类型的存储对象
-     * @param string $key
-     * @param null $value
-     * @param bool $replace
+     * @param string $name 存储对象的名称
+     * @param null $value 要存储的值
      * @param int $expire
      * @return RedisJson
      */
-    public static function create(string $key, $value = null, bool $replace = true, int $expire = 0): RedisJson
+    public static function create(string $name, $value = null, int $expire = 0): RedisJson
     {
-        $json = new RedisJson(self::handle(), $key);
+        $json = new RedisJson(self::handle(), $name);
         if (!is_null($value)) {
-            $json->set($value, $replace, $expire);
+            $json->set($value, $expire);
         }
         return $json;
     }
 
     /**
      * 创建一个BIT存储对象
-     * @param $key string Redis 键
+     * @param $name string Redis存储对象的名称
      * @param int $value 值
-     * @param bool $replace 是否覆盖
      * @param int $expire 生存期
      * @return RedisBit
      */
-    public static function createBit(string $key, ?int $value = null, bool $replace = true, int $expire = 0): RedisBit
+    public static function createBit(string $name, ?int $value = null, int $expire = 0): RedisBit
     {
-        $bit = new RedisBit(self::handle(), $key);
+        $bit = new RedisBit(self::handle(), $name);
         if (!is_null($value)) {
-            $bit->set($value, $replace, $expire);
+            $bit->set($value, $expire);
         }
         return $bit;
     }
 
     /**
      * 创建一个Int存储对象
-     * @param $key string Redis 键
+     * @param $name string Redis存储对象的名称
      * @param int $value 值
-     * @param bool $replace 是否覆盖
      * @param int $expire 生存期
      * @return RedisInt
      */
-    public static function createInt(string $key, ?int $value = null, bool $replace = true, int $expire = 0): RedisInt
+    public static function createInt(string $name, ?int $value = null, int $expire = 0): RedisInt
     {
-        $int = new RedisInt(self::handle(), $key);
+        $int = new RedisInt(self::handle(), $name);
 
         if (!is_null($value)) {
-            $int->set($value, $replace, $expire);
+            $int->set($value, $expire);
         }
         return $int;
     }
 
     /**
      * 创建一个FLOAT存储对象
-     * @param $key string Redis 键
+     * @param $name string Redis存储对象的名称
      * @param float $value 值
-     * @param bool $replace 是否覆盖
      * @param int $expire 生存期
      * @return RedisFloat
      */
-    public static function createFloat(string $key, ?float $value = null, bool $replace = true, int $expire = 0): RedisFloat
+    public static function createFloat(string $name, ?float $value = null, int $expire = 0): RedisFloat
     {
-        $float = new RedisFloat(self::handle(), $key);
+        $float = new RedisFloat(self::handle(), $name);
         if (!is_null($value)) {
-            $float->set($value, $replace, $expire);
+            $float->set($value, $expire);
         }
         return $float;
     }
 
     /**
      * 创建一个Hash存储对象
-     * @param $key string 名称
+     * @param $name string 名称
      * @param array $fields 初始值
+     * @param int $expire 过期时间(秒),默认无限
      * @return RedisHash
      */
-    public static function createHash(string $key, ?array $fields = null): RedisHash
+    public static function createHash(string $name, ?array $fields = null, int $expire = 0): RedisHash
     {
         //创建Hash对象
-        $hash = new RedisHash(self::handle(), $key);
+        $hash = new RedisHash(self::handle(), $name);
 
         //如果指定了值,则设置值
         if (!is_null($fields)) {
-            $hash->multiSet($fields);
+            $hash->inserts($fields);
         }
+
+        //设置过期时间(秒)
+        $hash->setExpire($expire);
 
         //返回 Hash对象
         return $hash;
@@ -313,19 +315,23 @@ final class Redis
 
     /**
      * 创建一个List存储对象
-     * @param $key string 键名
-     * @param mixed $values 要保存的值
+     * @param $name string 列表对象的名称
+     * @param array $values 要保存的值
+     * @param int $expire 过期时间(秒),默认无限
      * @return RedisList
      */
-    public static function createList(string $key, ?array $values = null): RedisList
+    public static function createList(string $name, ?array $values = null, int $expire = 0): RedisList
     {
         //创建对象
-        $list = new RedisList(self::handle(), $key);
+        $list = new RedisList(self::handle(), $name);
 
         //如果指定了值,则添加
         if (!is_null($values)) {
-            $list->insert($values);
+            $list->inserts($values);
         }
+
+        //设置过期时间
+        $list->setExpire($expire);
 
         //返回List对象
         return $list;
@@ -333,23 +339,23 @@ final class Redis
 
     /**
      * 创建一个集合(Set)对象
-     * @param $key string  键
-     * @param mixed $members 元素或元素数组
+     * @param $name string  集合对象的名称
+     * @param array $members 集合成员数组
+     * @param int $expire 过期时间(秒),默认无限
      * @return RedisSet
      */
-    public static function createSet(string $key, $members = null): RedisSet
+    public static function createSet(string $name, ?array $members = null, int $expire = 0): RedisSet
     {
         //创建集合对象
-        $set = new RedisSet(self::handle(), $key);
+        $set = new RedisSet(self::handle(), $name);
 
         //如果指定了元素,则添加元素
         if (!is_null($members)) {
-            if (is_array($members)) {
-                $set->addMulti($members);
-            } elseif ($members) {
-                $set->add($members);
-            }
+            $set->inserts($members);
         }
+
+        //设置过期时间
+        $set->setExpire($expire);
 
         //返回集合对象
         return $set;
@@ -357,119 +363,131 @@ final class Redis
 
     /**
      * 创建一个有序集合
-     * @param $name string 集合名称
-     * @param array|null $kvs 成员(键值数组)
+     * @param $name string 有序集合名称
+     * @param array|null $kvs 集合成员(键值数组)
+     * @param int $expire 过期时间(秒),默认无限
      * @return RedisSortedSet
      */
-    public static function createSortedSet(string $name, ?array $kvs = null): RedisSortedSet
+    public static function createSortedSet(string $name, ?array $kvs = null, int $expire = 0): RedisSortedSet
     {
+        //创建集合对象
         $set = new RedisSortedSet(self::handle(), $name);
+
+        //如果指定了成员,则添加成员
         if (!is_null($kvs)) {
             $set->inserts($kvs);
         }
+
+        //设置过期时间
+        $set->setExpire($expire);
+
+        //返回有序集合对象
         return $set;
     }
 
     /**
-     * 同时存储多个键值对,覆盖
-     * @param array $kvs 键值对
-     * @param bool $replace 是否覆盖
-     * @return bool|int
+     * 同时存储多个存储对象,如果存在,则覆盖
+     * 可应用于字符串/整数/浮点/JSON等 标量类型数据
+     * @param array $kvs
+     * @return bool
      */
-    public static function multiSet(array $kvs, bool $replace = true)
+    public static function update(array $kvs): bool
     {
-        if ($replace) {
-            return self::handle()->mset($kvs);
-        }
-        return self::handle()->msetnx($kvs);
+        return self::handle()->mset($kvs);
     }
 
     /**
-     * 返回所有(一个或多个)给定key的值。
-     * @param array $keys
-     * @return array
+     * 同时存储多个存储对象(与update相同)
+     * 可应用于字符串/整数/浮点/JSON等 标量类型数据
+     * @param array $kvs
+     * @return bool
      */
-    public static function multiGet(array $keys): array
+    public static function inserts(array $kvs): bool
     {
-        return self::handle()->mget($keys);
+        return self::update($kvs);
     }
 
     /**
-     * 取配置中的超时设置
-     * @return int
+     * 返回所有(一个或多个)给定存储对象的值
+     * 可应用于字符串/整数/浮点/JSON等 标量类型数据
+     * @param array $names
+     * @return array 值数组,没有键,与参数严格对应,不存在的用null占位
      */
-    public static function getTimeout(): int
+    public static function col(array $names): array
     {
-        return intval(configDefault(30, 'redis', 'timeout'));
+        return self::handle()->mget($names);
+    }
+
+
+    /**
+     * 在指定的多个列表的头部循环查看,如果有元素则弹出,如果全为空,则等待
+     * @param array $lists 列表(List)对象的名称数组
+     * @param int $timeout 等待时间(s),默认无限等待
+     * @return array [列表的名称,弹出的元素]
+     */
+    public static function popLeftWait(array $lists, int $timeout = 0): array
+    {
+        return self::handle()->blPop($lists, $timeout);
     }
 
     /**
-     * 阻塞式头部弹出
-     * @param array $keys 列表(List)的键名数组
-     * @return array
+     * 在指定的多个列表的尾部循环查看,如果有元素则弹出,如果全为空,则等待
+     * @param array $keys 列表(List)对象的名称数组
+     * @param int $timeout 等待时间(s),默认无限等待
+     * @return array [列表的名称,弹出的元素]
      */
-    public static function blockLeftPop(array $keys): array
+    public static function popRightWait(array $keys, int $timeout = 0): array
     {
-        return self::handle()->blPop($keys, self::getTimeout());
-    }
-
-    /**
-     * 阻塞式尾部弹出
-     * @param array $keys 列表(List)的键名数组
-     * @return array
-     */
-    public static function blockRightPop(array $keys): array
-    {
-        return self::handle()->brPop($keys, self::getTimeout());
+        return self::handle()->brPop($keys, $timeout);
     }
 
     /**
      * 所有给定集合的交集。
+     * @param array $sets 集合名称
      * @return array 结果集
      */
-    public static function inter(): array
+    public static function inter(array $sets): array
     {
-        $sets = func_get_args();
-        return call_user_func_array([self::handle(), 'sInter'], $sets);
+        return self::handle()->sInter(...$sets);
     }
 
     /**
      * 计算所有给定集合的并集
+     * @param array $sets 集合名称
      * @return array 结果集
      */
-    public static function union(): array
+    public static function union(array $sets): array
     {
-        $sets = func_get_args();
-        return call_user_func_array([self::handle(), 'sUnion'], $sets);
+        return self::handle()->sUnion(...$sets);
     }
 
     /**
      * 计算所有给定集合的差集
+     * @param array $sets 集合名称
      * @return array 结果集
      */
-    public static function diff(): array
+    public static function diff(array $sets): array
     {
-        $sets = func_get_args();
-        return call_user_func_array([self::handle(), 'sDiff'], $sets);
+        return self::handle()->sDiff(...$sets);
     }
 
     /**
      * 创建一个频道(实际上没干什么事)
-     * @param $key string 频道名称
+     * @param $name string 频道名称
      * @return RedisChannel
      */
-    public static function createChannel(string $key): RedisChannel
+    public static function createChannel(string $name): RedisChannel
     {
-        return new RedisChannel(self::handle(), $key);
+        return new RedisChannel(self::handle(), $name);
     }
 
     /**
      * 订阅多个频道
+     * @param array $channels 频道名称列表
      * @param callable $func 有消息时的回调方法
      */
-    public static function subscribe(callable $func): void
+    public static function subscribe(array $channels, callable $func): void
     {
-        $channels = func_get_args();
         self::handle()->subscribe($channels, $func);
     }
 
@@ -514,29 +532,47 @@ final class Redis
      * @param $db int 数据库索引号
      * @return bool
      */
-    public static function selectDb($db): bool
+    public static function selectDb(int $db): bool
     {
         return self::handle()->select($db);
     }
 
     /**
-     * 返回当前数据库的 key 的数量。
+     * 返回当前数据库的 存储对象 的数量。
      * @return int
      */
-    public static function length(): int
+    public static function count(): int
     {
         return self::handle()->dbSize();
     }
 
     /**
-     * 从当前游标开始访问指定数量的键
-     * @param int $iterator 游标(最初以0开始)
-     * @param string $pattern 匹配
-     * @param int $count 返回数量
-     * @return array|bool 返回的新游标和元素,如果新的游标为0,表示结束
+     * 对全部存储对象,进行遍历
+     * @param string $pattern 匹配(*,?,[])
+     * @param int $count 建议每次搜索的数量,应该与键名平均长度成反比
+     * @return \Iterator
      */
-    public function scan(int $iterator = 0, string $pattern = '', int $count = 0)
+    public function selectNames(string $pattern = '', int $count = 1000): \Iterator
     {
-        return self::handle()->scan($iterator, $pattern, $count);
+        $iterator = null;
+        while (true) {
+            $ret = self::handle()->scan($iterator, $pattern, $count);
+            if (false == $ret) {
+                break;
+            }
+            foreach ($ret as $item) {
+                yield $item;
+            }
+        }
+    }
+
+    /**
+     * 获取指定HLL 并集的近似基数(即集合中唯一元素的个数)
+     * @param array $hypers 每个HLL的名称
+     * @return int
+     */
+    public function hyperCount(array $hypers): int
+    {
+        return self::handle()->pfCount($hypers);
     }
 }

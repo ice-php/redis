@@ -11,13 +11,12 @@ class RedisString extends RedisElement
     /**
      * 设置一个键值
      * @param $value string 值
-     * @param bool $replace 是否覆盖
      * @param int $expire 生存期
      * @return bool 成功否
      */
-    public function set(string $value, bool $replace = true, int $expire = 0): bool
+    public function set(string $value, int $expire = 0): bool
     {
-        return parent::setString($value, $replace, $expire);
+        return parent::setString($value, $expire);
     }
 
     /**
@@ -30,24 +29,25 @@ class RedisString extends RedisElement
     }
 
     /**
-     * 用value参数覆写(Overwrite)给定key所储存的字符串值，从偏移量offset开始
+     * 用value参数覆写(Overwrite)当前对象所储存的字符串值，从偏移量offset开始
+     * php中有一个函数substr_replace
      * @param $offset int 偏移
      * @param $value string 填充内容
      * @return int 被SETRANGE修改之后，字符串的长度。
      */
-    public function setRange(int $offset, string $value): int
+    public function substr_replace(int $offset, string $value): int
     {
-        return intval($this->handle->setRange($this->key, $offset, $value));
+        return intval($this->handle->setRange($this->name, $offset, $value));
     }
 
     /**
-     * 将value追加到key原来的值之后
+     * 将value追加到当前对象原来的值之后
      * @param $value string 要追加的字符串
      * @return int 完成后的字符串长度
      */
     public function append(string $value): int
     {
-        return intval($this->handle->append($this->key, $value));
+        return intval($this->handle->append($this->name, $value));
     }
 
     /**
@@ -66,19 +66,19 @@ class RedisString extends RedisElement
      * @param $end int
      * @return string
      */
-    public function getRange(int $start, int $end): string
+    public function substr(int $start, int $end): string
     {
-        return $this->handle->getRange($this->key, $start, $end);
+        return $this->handle->getRange($this->name, $start, $end);
     }
 
     /**
-     * 将给定key的值设为value，并返回key的旧值。
+     * 将当前对象的值设为value，并返回旧值。
      * @param $value string 新值
      * @return string 原值
      */
-    public function getSet(string $value): string
+    public function getAndSet(string $value): string
     {
-        return $this->handle->getSet($this->key, $value);
+        return $this->handle->getSet($this->name, $value);
     }
 
     /**
@@ -87,7 +87,7 @@ class RedisString extends RedisElement
      */
     public function length(): int
     {
-        return $this->handle->strlen($this->key);
+        return $this->handle->strlen($this->name);
     }
 
     /**
@@ -96,7 +96,7 @@ class RedisString extends RedisElement
      */
     public function toBit(): RedisBit
     {
-        return new RedisBit($this->handle, $this->key);
+        return new RedisBit($this->handle, $this->name);
     }
 
     /**
@@ -105,7 +105,7 @@ class RedisString extends RedisElement
      */
     public function toInt(): RedisInt
     {
-        return new RedisInt($this->handle, $this->key);
+        return new RedisInt($this->handle, $this->name);
     }
 
     /**
@@ -114,6 +114,6 @@ class RedisString extends RedisElement
      */
     public function toFloat(): RedisFloat
     {
-        return new RedisFloat($this->handle, $this->key);
+        return new RedisFloat($this->handle, $this->name);
     }
 }

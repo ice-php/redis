@@ -22,12 +22,19 @@ final class RedisFloat extends RedisElement
      * @param $diff float 1/-1/N/-N
      * @return float 操作过后的值
      */
-    public function crease(float $diff = 1): float
+    public function increase(float $diff = 1): float
     {
-        //参数修正为浮点
-        $diff = floatval($diff);
+        return $this->handle->incrByFloat($this->name, $diff);
+    }
 
-        return $this->handle->incrByFloat($this->key, $diff);
+    /**
+     * 减量操作
+     * @param float $diff
+     * @return float
+     */
+    public function decrease(float $diff = 1): float
+    {
+        return $this->increase(-$diff);
     }
 
     /**
@@ -42,12 +49,21 @@ final class RedisFloat extends RedisElement
     /**
      * 设置一个键值
      * @param $value float 值
-     * @param bool $replace 是否覆盖
      * @param int $expire 生存期
      * @return bool 成功否
      */
-    public function set(float $value,bool $replace = true, int $expire = 0):bool
+    public function set(float $value, int $expire = 0): bool
     {
-        return parent::setString(strval($value), $replace, $expire);
+        return parent::setString(strval($value), $expire);
+    }
+
+    /**
+     * 将当前对象的值设为value，并返回旧值。
+     * @param $value float 新值
+     * @return float 原值
+     */
+    public function getAndSet(float $value): float
+    {
+        return floatval($this->handle->getSet($this->name, strval($value)));
     }
 }

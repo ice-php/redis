@@ -22,13 +22,12 @@ class RedisJson extends RedisElement
     /**
      * 设置一个键值
      * @param $value string 值
-     * @param bool $replace 是否覆盖
      * @param int $expire 生存期
      * @return bool 成功否
      */
-    public function set($value, bool $replace = true, int $expire = 0): bool
+    public function set($value,  int $expire = 0): bool
     {
-        return parent::setString(json($value), $replace, $expire);
+        return parent::setString(json($value),  $expire);
     }
 
     /**

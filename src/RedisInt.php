@@ -21,30 +21,45 @@ final class RedisInt extends RedisElement
      * 数值增减
      * @param $diff int|string 1/-1/N/-N
      * @return int 操作过后的值
-     * @throws RedisException
      */
-    public function crease(int $diff = 1): int
+    public function increase(int $diff = 1): int
     {
-        //参数修正为整数
-        $diff = intval($diff);
+        //加一操作
+        if ($diff == 1) {
+            return $this->handle->incr($this->name);
+        }
+
+        //减一操作
+        if ($diff == -1) {
+            return $this->handle->decr($this->name);
+        }
 
         //增加
         if ($diff > 0) {
-            return $this->handle->incrBy($this->key, $diff);
+            return $this->handle->incrBy($this->name, $diff);
         }
 
         //减少
         if ($diff < 0) {
-            return $this->handle->decrBy($this->key, abs($diff));
+            return $this->handle->decrBy($this->name, abs($diff));
         }
 
-        //不能为0
-        throw new RedisException('数值增减方法的参数错误:' . $diff, RedisException::PARAM_ERROR_FOR_CREASE);
+        //如果0,返回原值
+        return $this->get();
     }
 
+    /**
+     * 整数减量
+     * @param int $diff 减量
+     * @return int 更新后的值
+     */
+    public function decrease(int $diff = 1): int
+    {
+        return $this->increase(-$diff);
+    }
 
     /**
-     * 获取当前缓存值,转换成整数
+     * 获取当前值,转换成整数
      * @return int
      */
     public function get(): int
@@ -53,14 +68,23 @@ final class RedisInt extends RedisElement
     }
 
     /**
-     * 设置一个键值
+     * 设置一个值
      * @param $value int 值
-     * @param bool $replace 是否覆盖
      * @param int $expire 生存期
      * @return bool 成功否
      */
-    public function set(int $value, bool $replace = true, int $expire = 0): bool
+    public function set(int $value, int $expire = 0): bool
     {
-        return parent::setString(strval($value), $replace, $expire);
+        return parent::setString(strval($value), $expire);
+    }
+
+    /**
+     * 将当前对象的值设为value，并返回旧值。
+     * @param $value int 新值
+     * @return int 原值
+     */
+    public function getAndSet(int $value): int
+    {
+        return intval($this->handle->getSet($this->name, strval($value)));
     }
 }

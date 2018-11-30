@@ -18,112 +18,119 @@ final class RedisHash extends RedisElement
     }
 
     /**
-     * 将哈希表key中的域field的值设为value。
-     * @param $field string 域名
+     * 将哈希表中的指定键的值设为value。
+     * @param $key string 键名
      * @param $value mixed 值
-     * @param bool $replace 是否覆盖
-     * @return bool|int
+     * @return int
      */
-    public function set(string $field, $value, bool $replace = true)
+    public function insert(string $key, $value): int
     {
-        //覆盖操作
-        if ($replace) {
-            return $this->handle->hSet($this->key, $field, $value);
-        }
-        return $this->handle->hSetNx($this->key, $field, $value);
+        return $this->handle->hSet($this->name, $key, $value) ?: 0;
     }
 
     /**
-     * 返回哈希表key中给定域field的值。
-     * @param $field string 域名
-     * @return string
-     */
-    public function get(string $field): string
-    {
-        return $this->handle->hGet($this->key, $field);
-    }
-
-    /**
-     * 返回哈希表key中，一个或多个给定域的值。
-     * @param $fields array 域名列表
-     * @return array
-     */
-    public function multiGet(array $fields): array
-    {
-        return $this->handle->hMGet($this->key, $fields)?:[];
-    }
-
-    /**
-     * 同时将多个field - value(域-值)对设置到哈希表key中。此命令会覆盖哈希表中已存在的域。
+     * 同时将多个key - value(键-值)对设置到哈希表中。此命令会覆盖哈希表中已存在的键。
      * @param array $kvs
      * @return bool
      */
-    public function multiSet(array $kvs): bool
+    public function inserts(array $kvs): bool
     {
-        return $this->handle->hMset($this->key, $kvs);
+        return $this->handle->hMset($this->name, $kvs);
     }
 
     /**
-     * 返回哈希表key中，所有的域和值。
-     * @return array
-     */
-    public function listAll(): array
-    {
-        return $this->handle->hGetAll($this->key);
-    }
-
-    /**
-     * 删除哈希表key中的一个或多个指定域，不存在的域将被忽略。
-     * @return mixed
-     */
-    public function deleteField()
-    {
-        $argv = func_get_args();
-        array_unshift($argv, $this->key);
-
-        return call_user_func_array([$this->handle, 'hDel'], $argv);
-    }
-
-    /**
-     * 返回哈希表key中域的数量。
+     * 删除哈希表key中的一个或多个指定键，不存在的域将被忽略。
+     * @param $keys string|array
      * @return int
      */
-    public function length(): int
+    public function delete($keys): int
     {
-        return $this->handle->hLen($this->key);
+        if (!is_array($keys)) {
+            $keys = [$keys];
+        }
+        return $this->handle->hDel($this->name, ...$keys) ?: 0;
     }
 
     /**
-     * 查看哈希表key中，给定域field是否存在。
-     * @param $field string 域名
+     * 查看哈希表中，给定键是否存在。
+     * @param $key string 键名
      * @return bool
      */
-    public function exists($field): bool
+    public function exists(string $key): bool
     {
-        return $this->handle->hExists($this->key, $field);
+        return $this->handle->hExists($this->name, $key);
     }
 
     /**
-     * 为哈希表key中的域field的值加上增量increment。增量也可以为负数，相当于对给定域进行减法操作。
-     * @param $field string 域名
-     * @param $diff int|float
-     * @return float|int
+     * 返回哈希表中给定键的值。
+     * @param $key string 域名
+     * @return string
      */
-    public function crease(string $field, $diff = 1)
+    public function get(string $key): string
     {
-        if (is_int($diff)) {
-            return $this->handle->hIncrBy($this->key, $field, $diff);
-        }
-        return $this->handle->hIncrByFloat($this->key, $field, $diff);
+        return $this->handle->hGet($this->name, $key);
     }
 
     /**
-     * 返回哈希表key中的所有域。
+     * 返回哈希表中，一个或多个给定键的值。
+     * @param $keys array 域名列表
+     * @return array
+     */
+    public function col(array $keys): array
+    {
+        return $this->handle->hMGet($this->name, $keys) ?: [];
+    }
+
+    /**
+     * 返回哈希表中，所有的键和值。
+     * @return array
+     */
+    public function all(): array
+    {
+        return $this->handle->hGetAll($this->name);
+    }
+
+    /**
+     * 返回哈希表中所有键的数量。
+     * @return int
+     */
+    public function count(): int
+    {
+        return $this->handle->hLen($this->name);
+    }
+
+    /**
+     * 返回哈希表中的所有键。
      * @return array
      */
     public function listKeys(): array
     {
-        return $this->handle->hKeys($this->key);
+        return $this->handle->hKeys($this->name);
+    }
+
+    /**
+     * 为哈希表中的键的值加上增量increment。增量也可以为负数，相当于对给定域进行减法操作。
+     * @param $key string 键名
+     * @param $diff int|float
+     * @return float|int 更新之后的值
+     */
+    public function increase(string $key, $diff = 1)
+    {
+        if (is_int($diff)) {
+            return $this->handle->hIncrBy($this->name, $key, $diff);
+        }
+        return $this->handle->hIncrByFloat($this->name, $key, $diff);
+    }
+
+    /**
+     * 对指定键的值,进行减量
+     * @param string $key
+     * @param int|float $diff
+     * @return float|int 更新之后的值
+     */
+    public function decrease(string $key, $diff = 1)
+    {
+        return $this->increase($key, -$diff);
     }
 
     /**
@@ -132,18 +139,36 @@ final class RedisHash extends RedisElement
      */
     public function listValues(): array
     {
-        return $this->handle->hVals($this->key);
+        return $this->handle->hVals($this->name);
+    }
+
+    /**
+     * 返回哈希表中指定KEY的值的字符串长度
+     * @param $key string
+     * @return int
+     */
+    public function strlen(string $key): int
+    {
+        return $this->handle->rawCommand('hstrlen', [$this->name, $key]);
     }
 
     /**
      * 从当前游标开始访问指定数量的元素
-     * @param int $iterator 游标(最初以0开始)
-     * @param string $pattern 匹配
-     * @param int $count 返回数量
-     * @return array|bool 返回的新游标和元素,如果新的游标为0,表示结束
+     * @param string $pattern 匹配 * ? []
+     * @param int $count 建议一次搜索的量
+     * @return \Iterator
      */
-    public function scan(int $iterator = 0,string $pattern = '', int $count = 0): array
+    public function select(string $pattern = '', int $count = 100): \Iterator
     {
-        return $this->handle->hScan($this->key, $iterator, $pattern, $count);
+        $iterator = null;
+        while (true) {
+            $ret = $this->handle->hScan($this->name, $iterator, $pattern, $count);
+            if (false === $ret) {
+                break;
+            }
+            foreach ($ret as $k => $v) {
+                yield [$k => $v];
+            }
+        }
     }
 }
