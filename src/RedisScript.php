@@ -17,9 +17,8 @@ class RedisScript
     protected $handle;
 
     /**
-     * 构造一个字符串类
+     * 构造一个脚本类
      * @param \redis $redis 主Redis句柄
-     * @param $key string 键
      */
     public function __construct(\redis $redis)
     {

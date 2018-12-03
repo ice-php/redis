@@ -12,7 +12,7 @@ namespace icePHP;
  */
 function redisString(string $key, ?string $value = null, int $expire = 0): RedisString
 {
-    return Redis::createString($key, $value, $expire);
+    return Redis::string($key, $value, $expire);
 }
 
 /**
@@ -36,7 +36,7 @@ function redis(string $key, $value = null, int $expire = 0): RedisJson
  */
 function redisInt(string $key, ?int $value = null, int $expire = 0): RedisInt
 {
-    return Redis::createInt($key, $value, $expire);
+    return Redis::int($key, $value, $expire);
 }
 
 /**
@@ -48,7 +48,7 @@ function redisInt(string $key, ?int $value = null, int $expire = 0): RedisInt
  */
 function redisFloat(string $key, ?float $value = null, int $expire = 0): RedisFloat
 {
-    return Redis::createFloat($key, $value, $expire);
+    return Redis::float($key, $value, $expire);
 }
 
 /**
@@ -60,7 +60,7 @@ function redisFloat(string $key, ?float $value = null, int $expire = 0): RedisFl
  */
 function redisBit(string $key, ?int $value = null, int $expire = 0): RedisBit
 {
-    return Redis::createBit($key, $value, $expire);
+    return Redis::bit($key, $value, $expire);
 }
 
 /**
@@ -82,7 +82,7 @@ function redisHash(string $key, ?array $fields = null): RedisHash
  */
 function redisList(string $key, ?array $values = null): RedisList
 {
-    return Redis::createList($key, $values);
+    return Redis::list($key, $values);
 }
 
 /**
@@ -93,7 +93,7 @@ function redisList(string $key, ?array $values = null): RedisList
  */
 function redisSet(string $key, $members = null): RedisSet
 {
-    return Redis::createSet($key, $members);
+    return Redis::set($key, $members);
 }
 
 /**
@@ -104,7 +104,7 @@ function redisSet(string $key, $members = null): RedisSet
  */
 function redisSortedSet(string $key, array $members = null): RedisSortedSet
 {
-    return Redis::createSortedSet($key, $members);
+    return Redis::sortedSet($key, $members);
 }
 
 /**
